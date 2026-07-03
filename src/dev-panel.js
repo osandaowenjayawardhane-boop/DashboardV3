@@ -145,43 +145,60 @@ export async function updateLeadStage(leadId, newStage) {
 }
 
 // ─── DEVELOPER PANEL SIMULATORS ───
-export async function devProgressLeads(source) {
-  if (!supabaseClient || !currentChallenge) return;
-  try {
-    const { data, error } = await supabaseClient
-      .from('lead')
-      .select('id, pipeline_stage')
-      .eq('challenge_id', currentChallenge.id)
-      .eq('source', source)
-      .neq('pipeline_stage', 'Closed');
-
-    if (error) throw error;
-
-    if (data && data.length > 0) {
-      const lead = data[Math.floor(Math.random() * data.length)];
-      const stages = source === 'cold_call' 
-        ? ['Dialed', 'Picked Up', 'Booked', 'Showed', 'Closed']
-        : ['Sent', 'Replied', 'Booked', 'Showed', 'Closed'];
-      const idx = stages.indexOf(lead.pipeline_stage);
-      if (idx !== -1 && idx < stages.length - 1) {
-        await updateLeadStage(lead.id, stages[idx + 1]);
-      }
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
-
 export async function devAddColdCall() {
   await incrementColdCalls();
   await createLead('cold_call');
-  await devProgressLeads('cold_call');
 }
 
 export async function devAddColdDm() {
   await incrementColdDMs();
   await createLead('cold_dm');
-  await devProgressLeads('cold_dm');
+}
+
+export async function devMoveCallStage(fromStage, toStage) {
+  if (!supabaseClient || !currentChallenge) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from('lead')
+      .select('id')
+      .eq('challenge_id', currentChallenge.id)
+      .eq('source', 'cold_call')
+      .eq('pipeline_stage', fromStage)
+      .order('created_at', { ascending: true })
+      .limit(1);
+
+    if (error) throw error;
+    if (data && data.length > 0) {
+      await updateLeadStage(data[0].id, toStage);
+    } else {
+      console.log(`No active calls leads found in stage: ${fromStage}`);
+    }
+  } catch (err) {
+    console.error("Error advancing call lead stage:", err.message);
+  }
+}
+
+export async function devMoveDmStage(fromStage, toStage) {
+  if (!supabaseClient || !currentChallenge) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from('lead')
+      .select('id')
+      .eq('challenge_id', currentChallenge.id)
+      .eq('source', 'cold_dm')
+      .eq('pipeline_stage', fromStage)
+      .order('created_at', { ascending: true })
+      .limit(1);
+
+    if (error) throw error;
+    if (data && data.length > 0) {
+      await updateLeadStage(data[0].id, toStage);
+    } else {
+      console.log(`No active DMs leads found in stage: ${fromStage}`);
+    }
+  } catch (err) {
+    console.error("Error advancing DM lead stage:", err.message);
+  }
 }
 
 export async function devAddFollowUp() {
@@ -268,6 +285,8 @@ export async function devResetToday() {
 // Bind to window to allow HTML onclick bindings
 window.devAddColdCall = devAddColdCall;
 window.devAddColdDm = devAddColdDm;
+window.devMoveCallStage = devMoveCallStage;
+window.devMoveDmStage = devMoveDmStage;
 window.devAddFollowUp = devAddFollowUp;
 window.devAddContent = devAddContent;
 window.devAddSale = devAddSale;

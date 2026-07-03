@@ -1835,12 +1835,35 @@
       <button onclick="closeDevPanel()" style="background: none; border: none; font-size: 14px; cursor: pointer; color: var(--text-muted); font-weight: bold; line-height: 1;">&times;</button>
     </div>
     <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
-      <button onclick="devAddColdCall()" style="background: var(--line-1-subtle); border: 1px solid rgba(105, 11, 241, 0.2); color: var(--line-1); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Cold Call</button>
-      <button onclick="devAddColdDm()" style="background: var(--line-2-subtle); border: 1px solid rgba(239, 107, 81, 0.2); color: var(--line-2); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Cold DM</button>
-      <button onclick="devAddFollowUp()" style="background: var(--whitesmoke-100); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Follow Up</button>
-      <button onclick="devAddContent()" style="background: var(--whitesmoke-100); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Content</button>
+      <!-- Base Activity Increments -->
+      <button onclick="devAddColdCall()" style="background: var(--line-1-subtle); border: 1px solid rgba(105, 11, 241, 0.2); color: var(--line-1); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Cold Call (Dialed)</button>
+      <button onclick="devAddColdDm()" style="background: var(--line-2-subtle); border: 1px solid rgba(239, 107, 81, 0.2); color: var(--line-2); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Cold DM (Sent)</button>
+      
+      <!-- Cold Call Pipeline Advancement -->
+      <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border-solid);">
+        <h4 style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--line-1); margin-bottom: 4px;">Cold Calls Pipeline</h4>
+        <button onclick="devMoveCallStage('Dialed', 'Picked Up')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Dialed → Picked Up</button>
+        <button onclick="devMoveCallStage('Picked Up', 'Booked')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Picked Up → Booked</button>
+        <button onclick="devMoveCallStage('Booked', 'Showed')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Booked → Showed</button>
+        <button onclick="devMoveCallStage('Showed', 'Closed')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left;">Showed → Closed</button>
+      </div>
+
+      <!-- Cold DM Pipeline Advancement -->
+      <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border-solid);">
+        <h4 style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--line-2); margin-bottom: 4px;">Cold DMs Pipeline</h4>
+        <button onclick="devMoveDmStage('Sent', 'Replied')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Sent → Replied</button>
+        <button onclick="devMoveDmStage('Replied', 'Booked')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Replied → Booked</button>
+        <button onclick="devMoveDmStage('Booked', 'Showed')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Booked → Showed</button>
+        <button onclick="devMoveDmStage('Showed', 'Closed')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left;">Showed → Closed</button>
+      </div>
+
+      <!-- Other Actions -->
+      <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border-solid); display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+        <button onclick="devAddFollowUp()" style="background: var(--whitesmoke-100); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 6px; font-size: 10px; font-weight: 600; cursor: pointer;">+ Follow Up</button>
+        <button onclick="devAddContent()" style="background: var(--whitesmoke-100); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 6px; font-size: 10px; font-weight: 600; cursor: pointer;">+ Content</button>
+      </div>
       <button onclick="devAddSale()" style="background: var(--accent-subtle); border: 1px solid var(--accent); color: var(--accent); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Sale ($100)</button>
-      <button onclick="devResetToday()" style="background: rgba(239, 107, 81, 0.1); border: 1px solid var(--coral-100); color: var(--coral-100); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 6px;">Reset Today's Data</button>
+      <button onclick="devResetToday()" style="background: rgba(239, 107, 81, 0.1); border: 1px solid var(--coral-100); color: var(--coral-100); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 4px;">Reset Today's Data</button>
     </div>
   </div>
   <script type="module" src="/src/main.js"></script>
