@@ -1,15 +1,25 @@
 // supabase/functions/activity-service/index.ts
-// Shared Service for Mission Control Webhooks
+// Shared database service used by all webhook functions
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export const getSupabaseClient = () => {
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !serviceKey) {
-    throw new Error("Missing Supabase URL or Service Role Key in environment variables.");
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
   }
   return createClient(url, serviceKey);
 };
+
+export interface LeadData {
+  name?: string;
+  phone?: string;
+  email?: string;
+  company?: string;
+  pipeline_stage: string;
+  source: "cold_call" | "cold_dm";
+  external_id?: string;
+}
 
 export class ActivityService {
   private supabase;
@@ -19,7 +29,7 @@ export class ActivityService {
   }
 
   /**
-   * Helper to retrieve the current active challenge for a user
+   * Retrieve the current active challenge for a user.
    */
   async getActiveChallenge(userId: string) {
     const { data, error } = await this.supabase
@@ -37,116 +47,95 @@ export class ActivityService {
   }
 
   /**
-   * Ensures daily_activity row exists for the date (local timezone format YYYY-MM-DD)
+   * Upserts a lead using its GoHighLevel external_id as the unique key.
+   * - If a lead with that external_id exists: updates stage + contact fields.
+   * - If not: creates a new lead with all provided data.
+   * This is the single write path for all GHL pipeline events.
    */
-  async ensureDailyActivity(userId: string, challengeId: string, dateStr: string) {
-    const { data, error } = await this.supabase
-      .from("daily_activity")
-      .select("id")
-      .eq("challenge_id", challengeId)
-      .eq("activity_date", dateStr);
+  async upsertLead(userId: string, challengeId: string, lead: LeadData) {
+    const now = new Date().toISOString();
 
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
-      const { data: insertData, error: insertErr } = await this.supabase
-        .from("daily_activity")
-        .insert({
-          user_id: userId,
-          challenge_id: challengeId,
-          activity_date: dateStr,
-          cold_calls: 0,
-          cold_dms: 0,
-          follow_ups: 0,
-          content_posted: 0
-        })
-        .select()
-        .single();
-
-      if (insertErr) throw insertErr;
-      return insertData;
-    }
-    return data[0];
-  }
-
-  /**
-   * Increments a counter inside daily_activity for today
-   */
-  async incrementActivity(userId: string, challengeId: string, dateStr: string, field: "cold_calls" | "cold_dms" | "follow_ups" | "content_posted", value = 1) {
-    // Ensure daily activity row exists first
-    await this.ensureDailyActivity(userId, challengeId, dateStr);
-
-    // Deno/Postgres standard atomic update
-    const { data: current, error: selectErr } = await this.supabase
-      .from("daily_activity")
-      .select(field)
-      .eq("challenge_id", challengeId)
-      .eq("activity_date", dateStr)
-      .single();
-
-    if (selectErr) throw selectErr;
-
-    const currentCount = current ? (current[field] || 0) : 0;
-    const { error: updateErr } = await this.supabase
-      .from("daily_activity")
-      .update({ [field]: currentCount + value })
-      .eq("challenge_id", challengeId)
-      .eq("activity_date", dateStr);
-
-    if (updateErr) throw updateErr;
-  }
-
-  /**
-   * Upserts a lead pipeline stage. Creates a lead if it doesn't exist, otherwise updates stage.
-   */
-  async upsertLeadStage(userId: string, challengeId: string, source: "cold_call" | "cold_dm", pipelineStage: string, leadIdentifier?: string) {
-    if (leadIdentifier) {
-      // Check if there is an existing lead with this GHL Opportunity ID
-      const { data: existingLeads, error: selectErr } = await this.supabase
+    if (lead.external_id) {
+      // Attempt update by GHL opportunity ID
+      const { data: existing, error: selectErr } = await this.supabase
         .from("lead")
         .select("id")
         .eq("challenge_id", challengeId)
-        .eq("external_id", leadIdentifier)
+        .eq("external_id", lead.external_id)
         .limit(1);
 
-      if (!selectErr && existingLeads && existingLeads.length > 0) {
-        // Update stage of the existing lead
+      if (selectErr) throw selectErr;
+
+      if (existing && existing.length > 0) {
+        // Update: always overwrite stage; overwrite contact fields only if provided
+        const updates: Record<string, unknown> = {
+          pipeline_stage: lead.pipeline_stage,
+          updated_at: now,
+        };
+        if (lead.name)    updates.name    = lead.name;
+        if (lead.phone)   updates.phone   = lead.phone;
+        if (lead.email)   updates.email   = lead.email;
+        if (lead.company) updates.company = lead.company;
+
         const { error: updateErr } = await this.supabase
           .from("lead")
-          .update({ pipeline_stage: pipelineStage })
-          .eq("id", existingLeads[0].id);
+          .update(updates)
+          .eq("id", existing[0].id);
 
         if (updateErr) throw updateErr;
         return;
       }
     }
 
-    // Otherwise, create a new lead at this stage
+    // Insert new lead
     const { error: insertErr } = await this.supabase
       .from("lead")
       .insert({
         user_id: userId,
         challenge_id: challengeId,
-        source: source,
-        pipeline_stage: pipelineStage,
-        external_id: leadIdentifier || null
+        source: lead.source,
+        pipeline_stage: lead.pipeline_stage,
+        name: lead.name || null,
+        phone: lead.phone || null,
+        email: lead.email || null,
+        company: lead.company || null,
+        external_id: lead.external_id || null,
+        created_at: now,
+        updated_at: now,
       });
 
     if (insertErr) throw insertErr;
   }
 
   /**
-   * Adds revenue transaction
+   * Legacy wrapper — kept for backward compatibility with kixie webhook.
    */
-  async addRevenueRecord(userId: string, challengeId: string, amount: number, dateStr: string) {
+  async upsertLeadStage(
+    userId: string,
+    challengeId: string,
+    source: "cold_call" | "cold_dm",
+    pipelineStage: string,
+    externalId?: string
+  ) {
+    await this.upsertLead(userId, challengeId, {
+      source,
+      pipeline_stage: pipelineStage,
+      external_id: externalId,
+    });
+  }
+
+  /**
+   * Adds a revenue transaction.
+   */
+  async addRevenueRecord(
+    userId: string,
+    challengeId: string,
+    amount: number,
+    dateStr: string
+  ) {
     const { error } = await this.supabase
       .from("revenue")
-      .insert({
-        user_id: userId,
-        challenge_id: challengeId,
-        amount: amount,
-        revenue_date: dateStr
-      });
+      .insert({ user_id: userId, challenge_id: challengeId, amount, revenue_date: dateStr });
 
     if (error) throw error;
   }
