@@ -217,11 +217,11 @@ export async function devAddSale() {
       .from('lead')
       .select('id, source')
       .eq('challenge_id', currentChallenge.id)
-      .neq('pipeline_stage', 'Closed')
+      .neq('pipeline_stage', 'Closed Won')
       .limit(1);
     
     if (!error && data && data.length > 0) {
-      await updateLeadStage(data[0].id, 'Closed');
+      await updateLeadStage(data[0].id, 'Closed Won');
     } else {
       const randomSource = Math.random() > 0.5 ? 'cold_call' : 'cold_dm';
       await supabaseClient
@@ -230,7 +230,7 @@ export async function devAddSale() {
           user_id: currentChallenge.user_id,
           challenge_id: currentChallenge.id,
           source: randomSource,
-          pipeline_stage: 'Closed'
+          pipeline_stage: 'Closed Won'
         });
     }
   } catch (e) {

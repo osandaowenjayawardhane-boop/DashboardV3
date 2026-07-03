@@ -81,8 +81,8 @@ export async function fetchAndRenderDashboard() {
       .eq('challenge_id', chalId);
 
     let pipelineCounts = {
-      cold_call: { Dialed: 0, "Picked Up": 0, Booked: 0, Showed: 0, Closed: 0 },
-      cold_dm: { Sent: 0, Replied: 0, Booked: 0, Showed: 0, Closed: 0 }
+      cold_call: { Dialed: 0, "Picked Up": 0, Booked: 0, Showed: 0, "Closed Won": 0 },
+      cold_dm: { Sent: 0, Replied: 0, Booked: 0, Showed: 0, "Closed Won": 0 }
     };
 
     if (!leadErr && leads) {
@@ -98,13 +98,13 @@ export async function fetchAndRenderDashboard() {
     document.getElementById('stageCallsPickedUp').textContent = pipelineCounts.cold_call["Picked Up"];
     document.getElementById('stageCallsBooked').textContent = pipelineCounts.cold_call.Booked;
     document.getElementById('stageCallsShowed').textContent = pipelineCounts.cold_call.Showed;
-    document.getElementById('stageCallsClosed').textContent = pipelineCounts.cold_call.Closed;
+    document.getElementById('stageCallsClosed').textContent = pipelineCounts.cold_call["Closed Won"];
 
     document.getElementById('stageDmsSent').textContent = pipelineCounts.cold_dm.Sent;
     document.getElementById('stageDmsReplied').textContent = pipelineCounts.cold_dm.Replied;
     document.getElementById('stageDmsBooked').textContent = pipelineCounts.cold_dm.Booked;
     document.getElementById('stageDmsShowed').textContent = pipelineCounts.cold_dm.Showed;
-    document.getElementById('stageDmsClosed').textContent = pipelineCounts.cold_dm.Closed;
+    document.getElementById('stageDmsClosed').textContent = pipelineCounts.cold_dm["Closed Won"];
 
     // 3. Revenue Terminal Metrics
     const { data: revList, error: revErr } = await supabaseClient

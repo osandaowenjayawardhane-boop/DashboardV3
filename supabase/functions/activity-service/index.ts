@@ -109,7 +109,7 @@ export class ActivityService {
         .select("id")
         .eq("challenge_id", challengeId)
         .eq("source", source)
-        .neq("pipeline_stage", "Closed")
+        .neq("pipeline_stage", "Closed Won")
         .limit(1);
 
       if (!selectErr && existingLeads && existingLeads.length > 0) {

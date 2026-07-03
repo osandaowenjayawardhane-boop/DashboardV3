@@ -60,13 +60,31 @@ serve(async (req) => {
         await service.upsertLeadStage(userId, challengeId, "cold_dm", "Sent", payload.contact_id);
       }
     } 
-    else if (eventType === "OpportunityCreated" || eventType === "opportunity_created") {
-      // Opportunity Created matches 'Booked' or 'Picked Up'/'Replied' depending on stage
+    else if (
+      eventType === "OpportunityCreated" || 
+      eventType === "opportunity_created" ||
+      eventType === "OpportunityStatusChanged" ||
+      eventType === "opportunity_status_changed"
+    ) {
       const stageName = payload.stageName || payload.stage_name || "";
+      const status = payload.status || payload.opportunityStatus || "";
       let pipelineStage = source === "cold_call" ? "Picked Up" : "Replied";
 
-      if (stageName.toLowerCase().includes("book") || stageName.toLowerCase().includes("schedule")) {
+      if (
+        status.toLowerCase() === "won" || 
+        status.toLowerCase() === "closed won" || 
+        stageName.toLowerCase().includes("won") || 
+        stageName.toLowerCase().includes("closed won")
+      ) {
+        pipelineStage = "Closed Won";
+      } else if (stageName.toLowerCase().includes("show") || stageName.toLowerCase().includes("attended")) {
+        pipelineStage = "Showed";
+      } else if (stageName.toLowerCase().includes("book") || stageName.toLowerCase().includes("schedule")) {
         pipelineStage = "Booked";
+      } else if (stageName.toLowerCase().includes("pick") || stageName.toLowerCase().includes("answer") || stageName.toLowerCase().includes("reply") || stageName.toLowerCase().includes("convers")) {
+        pipelineStage = source === "cold_call" ? "Picked Up" : "Replied";
+      } else if (stageName.toLowerCase().includes("dial") || stageName.toLowerCase().includes("sent") || stageName.toLowerCase().includes("outbound")) {
+        pipelineStage = source === "cold_call" ? "Dialed" : "Sent";
       }
 
       await service.upsertLeadStage(userId, challengeId, source, pipelineStage, payload.contact_id);
