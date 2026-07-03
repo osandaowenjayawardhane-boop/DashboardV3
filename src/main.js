@@ -2,7 +2,6 @@
 import { loadDatabaseConfig, saveDatabaseConfig, initSupabase, supabaseClient } from './supabase.js';
 import { handleAuth, handleLogout, toggleAuthMode, showError } from './auth.js';
 import { loadUserChallenge, unsubscribeFromRealtime } from './dashboard.js';
-import { setupDevPanelTrigger, closeDevPanel } from './dev-panel.js';
 
 // ─── CLOCK UPDATE ───
 function updateClock() {
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateClock();
   setInterval(updateClock, 1000);
-  setupDevPanelTrigger();
 });
 
 function setupAuthListeners(client) {
@@ -42,7 +40,6 @@ function setupAuthListeners(client) {
       document.getElementById('authContainer').style.display = 'flex';
       document.getElementById('dashboard').style.display = 'none';
       unsubscribeFromRealtime();
-      closeDevPanel();
     }
   });
 }
@@ -73,9 +70,47 @@ function toggleSetupPanel() {
   }
 }
 
+export function switchViewTab(tabName) {
+  const scoreboardBtn = document.getElementById('btnScoreboardTab');
+  const leadsBtn = document.getElementById('btnLeadsTab');
+  const scoreboardMain = document.getElementById('mainScoreboard');
+  const scoreboardFooter = document.getElementById('footerScoreboard');
+  const leadsPanel = document.getElementById('leadsPanel');
+  
+  if (tabName === 'scoreboard') {
+    if (scoreboardBtn) {
+      scoreboardBtn.style.color = 'var(--text-primary)';
+      scoreboardBtn.style.borderBottomColor = 'var(--accent)';
+    }
+    if (leadsBtn) {
+      leadsBtn.style.color = 'var(--text-muted)';
+      leadsBtn.style.borderBottomColor = 'transparent';
+    }
+    if (scoreboardMain) scoreboardMain.style.display = 'grid';
+    if (scoreboardFooter) scoreboardFooter.style.display = 'block';
+    if (leadsPanel) leadsPanel.style.display = 'none';
+  } else {
+    if (scoreboardBtn) {
+      scoreboardBtn.style.color = 'var(--text-muted)';
+      scoreboardBtn.style.borderBottomColor = 'transparent';
+    }
+    if (leadsBtn) {
+      leadsBtn.style.color = 'var(--text-primary)';
+      leadsBtn.style.borderBottomColor = 'var(--accent)';
+    }
+    if (scoreboardMain) scoreboardMain.style.display = 'none';
+    if (scoreboardFooter) scoreboardFooter.style.display = 'none';
+    if (leadsPanel) leadsPanel.style.display = 'block';
+    
+    // Import dynamically to avoid eager circular dependencies
+    import('./leads.js').then(m => m.fetchAndRenderLeads());
+  }
+}
+
 // Bind HTML events to module handlers
 window.toggleSetupPanel = toggleSetupPanel;
 window.saveDatabaseConfig = handleDatabaseSetupSave;
 window.toggleAuthMode = toggleAuthMode;
 window.handleLogout = handleLogout;
 window.handleAuth = (event) => handleAuth(event, () => {});
+window.switchViewTab = switchViewTab;

@@ -1537,7 +1537,11 @@
     <header class="header fade-in">
       <div class="header-brand">
         <div class="live-dot"></div>
-        <h1>The $8K Challenge</h1>
+        <h1 style="margin-right: 20px;">The $8K Challenge</h1>
+        <nav style="display: flex; gap: 16px; align-items: center;">
+          <button id="btnScoreboardTab" onclick="switchViewTab('scoreboard')" style="background: none; border: none; font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-primary); cursor: pointer; border-bottom: 2px solid var(--accent); padding: 6px 0; transition: all 0.2s;">Scoreboard</button>
+          <button id="btnLeadsTab" onclick="switchViewTab('leads')" style="background: none; border: none; font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; padding: 6px 0; transition: all 0.2s;">Leads</button>
+        </nav>
       </div>
       <div class="progress-container">
         <div class="progress-labels">
@@ -1559,7 +1563,7 @@
     </header>
 
     <!-- ═══ MAIN ═══ -->
-    <main class="main">
+    <main class="main" id="mainScoreboard">
 
       <!-- ─── DEPARTURES ─── -->
       <div class="panel fade-in fade-in-d1" id="departuresPanel">
@@ -1804,7 +1808,7 @@
     </main>
 
     <!-- ═══ FOOTER ═══ -->
-    <footer class="footer fade-in fade-in-d4">
+    <footer class="footer fade-in fade-in-d4" id="footerScoreboard">
       <div class="calendar-header">
         <div class="calendar-title">28-Day Revenue History</div>
         <div class="calendar-stats">
@@ -1823,47 +1827,74 @@
       </div>
     </footer>
 
-  <!-- Dev Tools Trigger Button -->
-  <button id="devPanelTrigger" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 999; background: var(--surface); border: 1px solid var(--border-solid); border-radius: 50%; width: 36px; height: 36px; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-md); transition: all 0.2s;" onclick="toggleDevPanel()" title="Open Developer Panel">
-    <span style="color: var(--text-secondary); font-size: 16px; line-height: 1;">⚙</span>
-  </button>
-
-  <!-- ═══ DEVELOPER PANEL ═══ -->
-  <div id="devPanel" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 1000; background: var(--surface); border: 1px solid var(--border-solid); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-lg); width: 260px; animation: fadeSlideUp 0.3s ease-out;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary);">Developer Panel</h3>
-      <button onclick="closeDevPanel()" style="background: none; border: none; font-size: 14px; cursor: pointer; color: var(--text-muted); font-weight: bold; line-height: 1;">&times;</button>
+  <!-- ═══ LEADS PANEL ═══ -->
+  <div class="panel fade-in" id="leadsPanel" style="display: none; padding: 20px; max-width: 1400px; margin: 16px auto; min-height: 480px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-solid); border-radius: var(--radius); background: var(--surface);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-solid); padding-bottom: 12px;">
+      <h2 style="font-size: 14px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">Leads Directory</h2>
+      <button onclick="openLeadModal()" style="background: var(--accent); color: white; border: none; border-radius: var(--radius-xs); padding: 8px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s;">+ Add Lead</button>
     </div>
-    <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
-      <!-- Base Activity Increments -->
-      <button onclick="devAddColdCall()" style="background: var(--line-1-subtle); border: 1px solid rgba(105, 11, 241, 0.2); color: var(--line-1); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Cold Call (Dialed)</button>
-      <button onclick="devAddColdDm()" style="background: var(--line-2-subtle); border: 1px solid rgba(239, 107, 81, 0.2); color: var(--line-2); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Cold DM (Sent)</button>
-      
-      <!-- Cold Call Pipeline Advancement -->
-      <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border-solid);">
-        <h4 style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--line-1); margin-bottom: 4px;">Cold Calls Pipeline</h4>
-        <button onclick="devMoveCallStage('Dialed', 'Picked Up')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Dialed → Picked Up</button>
-        <button onclick="devMoveCallStage('Picked Up', 'Booked')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Picked Up → Booked</button>
-        <button onclick="devMoveCallStage('Booked', 'Showed')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Booked → Showed</button>
-        <button onclick="devMoveCallStage('Showed', 'Closed')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left;">Showed → Closed</button>
-      </div>
 
-      <!-- Cold DM Pipeline Advancement -->
-      <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border-solid);">
-        <h4 style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--line-2); margin-bottom: 4px;">Cold DMs Pipeline</h4>
-        <button onclick="devMoveDmStage('Sent', 'Replied')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Sent → Replied</button>
-        <button onclick="devMoveDmStage('Replied', 'Booked')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Replied → Booked</button>
-        <button onclick="devMoveDmStage('Booked', 'Showed')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left; margin-bottom: 4px;">Booked → Showed</button>
-        <button onclick="devMoveDmStage('Showed', 'Closed')" style="background: var(--surface); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 5px 8px; font-size: 10px; cursor: pointer; width: 100%; text-align: left;">Showed → Closed</button>
-      </div>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; color: var(--text-secondary);">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border-solid); padding-bottom: 8px;">
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Name</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Phone</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Source</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Stage</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Notes</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Created Date</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Last Updated</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted); text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="leadsTableBody">
+          <!-- Dynamic rows will render here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-      <!-- Other Actions -->
-      <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border-solid); display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-        <button onclick="devAddFollowUp()" style="background: var(--whitesmoke-100); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 6px; font-size: 10px; font-weight: 600; cursor: pointer;">+ Follow Up</button>
-        <button onclick="devAddContent()" style="background: var(--whitesmoke-100); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 6px; font-size: 10px; font-weight: 600; cursor: pointer;">+ Content</button>
+  <!-- Lead Entry / Edit Modal -->
+  <div id="leadModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: rgba(0, 0, 0, 0.4); align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: var(--surface); border: 1px solid var(--border-solid); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-lg); width: 360px; animation: fadeSlideUp 0.3s ease-out;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 id="modalTitle" style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-primary); margin: 0;">Add New Lead</h3>
+        <button onclick="closeLeadModal()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: var(--text-muted); font-weight: bold; line-height: 1;">&times;</button>
       </div>
-      <button onclick="devAddSale()" style="background: var(--accent-subtle); border: 1px solid var(--accent); color: var(--accent); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Sale ($100)</button>
-      <button onclick="devResetToday()" style="background: rgba(239, 107, 81, 0.1); border: 1px solid var(--coral-100); color: var(--coral-100); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 4px;">Reset Today's Data</button>
+      <form id="leadForm" onsubmit="saveLeadForm(event)">
+        <input type="hidden" id="modalLeadId" value="">
+        <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
+          <label for="leadName" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Name</label>
+          <input type="text" id="leadName" required placeholder="John Doe" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; background: var(--surface); color: var(--text-primary);">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
+          <label for="leadPhone" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Phone</label>
+          <input type="text" id="leadPhone" placeholder="+1 (555) 019-2834" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; background: var(--surface); color: var(--text-primary);">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
+          <label for="leadSource" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Source Channel</label>
+          <select id="leadSource" onchange="updateStageDropdownOptions()" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; background: var(--surface); color: var(--text-primary);">
+            <option value="cold_call">Cold Call</option>
+            <option value="cold_dm">Cold DM</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
+          <label for="leadStage" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Pipeline Stage</label>
+          <select id="leadStage" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; background: var(--surface); color: var(--text-primary);">
+            <option value="Dialed">Dialed</option>
+            <option value="Picked Up">Picked Up</option>
+            <option value="Booked">Booked</option>
+            <option value="Showed">Showed</option>
+            <option value="Closed Won">Closed Won</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 16px; display: flex; flex-direction: column;">
+          <label for="leadNotes" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Notes</label>
+          <textarea id="leadNotes" placeholder="Context details..." rows="3" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; resize: vertical; background: var(--surface); color: var(--text-primary);"></textarea>
+        </div>
+        <button type="submit" class="auth-btn" style="width: 100%; padding: 10px; font-weight: bold; background: var(--accent); color: white; border: none; border-radius: var(--radius-xs); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px;">Save Lead</button>
+      </form>
     </div>
   </div>
   <script type="module" src="/src/main.js"></script>

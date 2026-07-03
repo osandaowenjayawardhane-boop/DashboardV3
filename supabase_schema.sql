@@ -77,8 +77,12 @@ CREATE TABLE public.lead (
   challenge_id    UUID REFERENCES public.challenge(id) ON DELETE CASCADE NOT NULL,
   source          TEXT NOT NULL CHECK (source IN ('cold_call', 'cold_dm')),
   pipeline_stage  TEXT NOT NULL,
+  name            TEXT,
+  phone           TEXT,
+  notes           TEXT,
   external_id     TEXT,
-  created_at      TIMESTAMPTZ DEFAULT now()
+  created_at      TIMESTAMPTZ DEFAULT now(),
+  updated_at      TIMESTAMPTZ DEFAULT now()
 );
 
 ALTER TABLE public.lead ENABLE ROW LEVEL SECURITY;
