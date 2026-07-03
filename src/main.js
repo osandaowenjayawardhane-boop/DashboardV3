@@ -2,7 +2,7 @@
 import { loadDatabaseConfig, saveDatabaseConfig, initSupabase, supabaseClient } from './supabase.js';
 import { handleAuth, handleLogout, toggleAuthMode, showError } from './auth.js';
 import { loadUserChallenge, unsubscribeFromRealtime } from './dashboard.js';
-import { setupKeyboardShortcut, closeDevPanel } from './dev-panel.js';
+import { setupDevPanelTrigger, closeDevPanel } from './dev-panel.js';
 
 // ─── CLOCK UPDATE ───
 function updateClock() {
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateClock();
   setInterval(updateClock, 1000);
-  setupKeyboardShortcut();
+  setupDevPanelTrigger();
 });
 
 function setupAuthListeners(client) {

@@ -1823,7 +1823,12 @@
       </div>
     </footer>
 
-  <!-- ═══ DEVELOPER PANEL (Ctrl + Shift + D) ═══ -->
+  <!-- Dev Tools Trigger Button -->
+  <button id="devPanelTrigger" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 999; background: var(--surface); border: 1px solid var(--border-solid); border-radius: 50%; width: 36px; height: 36px; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-md); transition: all 0.2s;" onclick="toggleDevPanel()" title="Open Developer Panel">
+    <span style="color: var(--text-secondary); font-size: 16px; line-height: 1;">⚙</span>
+  </button>
+
+  <!-- ═══ DEVELOPER PANEL ═══ -->
   <div id="devPanel" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 1000; background: var(--surface); border: 1px solid var(--border-solid); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-lg); width: 260px; animation: fadeSlideUp 0.3s ease-out;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary);">Developer Panel</h3>

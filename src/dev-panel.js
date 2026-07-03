@@ -2,17 +2,24 @@
 import { supabaseClient } from './supabase.js';
 import { currentChallenge, fetchAndRenderDashboard } from './dashboard.js';
 
-// ─── KEYBOARD & PANELS SHORTCUTS ───
-export function setupKeyboardShortcut() {
-  document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
-      e.preventDefault();
-      const panel = document.getElementById('devPanel');
-      if (panel && currentChallenge) {
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-      }
+// ─── DEV PANEL TRIGGER & TOGGLES ───
+export function setupDevPanelTrigger() {
+  const isDevMode = new URLSearchParams(window.location.search).get('dev') === '1';
+  const trigger = document.getElementById('devPanelTrigger');
+  if (trigger) {
+    if (isDevMode) {
+      trigger.style.display = 'flex';
+    } else {
+      trigger.style.display = 'none';
     }
-  });
+  }
+}
+
+export function toggleDevPanel() {
+  const panel = document.getElementById('devPanel');
+  if (panel && currentChallenge) {
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  }
 }
 
 export function closeDevPanel() {
@@ -266,3 +273,4 @@ window.devAddContent = devAddContent;
 window.devAddSale = devAddSale;
 window.devResetToday = devResetToday;
 window.closeDevPanel = closeDevPanel;
+window.toggleDevPanel = toggleDevPanel;
