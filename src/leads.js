@@ -37,6 +37,8 @@ export async function fetchAndRenderLeads() {
       tr.innerHTML = `
         <td style="padding: 10px; font-weight: 600; color: var(--text-primary);">${escapeHtml(l.name || 'Unnamed')}</td>
         <td style="padding: 10px; font-family: monospace;">${escapeHtml(l.phone || 'N/A')}</td>
+        <td style="padding: 10px;">${escapeHtml(l.email || '—')}</td>
+        <td style="padding: 10px;">${escapeHtml(l.company || '—')}</td>
         <td style="padding: 10px;">
           <span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; 
             background: ${l.source === 'cold_call' ? 'var(--line-1-subtle)' : 'var(--line-2-subtle)'}; 
@@ -94,9 +96,12 @@ async function loadLeadIntoForm(leadId) {
 
     document.getElementById('leadName').value = lead.name || '';
     document.getElementById('leadPhone').value = lead.phone || '';
+    document.getElementById('leadEmail').value = lead.email || '';
+    document.getElementById('leadCompany').value = lead.company || '';
     document.getElementById('leadSource').value = lead.source || 'cold_call';
     updateStageDropdownOptions();
     document.getElementById('leadStage').value = lead.pipeline_stage;
+    document.getElementById('leadExternalId').value = lead.external_id || '';
     document.getElementById('leadNotes').value = lead.notes || '';
 
     document.getElementById('leadModal').style.display = 'flex';
@@ -136,8 +141,11 @@ export async function saveLeadForm(event) {
   const leadId = document.getElementById('modalLeadId').value;
   const name = document.getElementById('leadName').value.trim();
   const phone = document.getElementById('leadPhone').value.trim();
+  const email = document.getElementById('leadEmail').value.trim();
+  const company = document.getElementById('leadCompany').value.trim();
   const source = document.getElementById('leadSource').value;
   const pipeline_stage = document.getElementById('leadStage').value;
+  const external_id = document.getElementById('leadExternalId').value.trim() || null;
   const notes = document.getElementById('leadNotes').value.trim();
 
   try {
@@ -148,8 +156,11 @@ export async function saveLeadForm(event) {
         .update({
           name,
           phone,
+          email,
+          company,
           source,
           pipeline_stage,
+          external_id,
           notes,
           updated_at: new Date().toISOString()
         })
@@ -165,8 +176,11 @@ export async function saveLeadForm(event) {
           challenge_id: currentChallenge.id,
           name,
           phone,
+          email,
+          company,
           source,
           pipeline_stage,
+          external_id,
           notes,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()

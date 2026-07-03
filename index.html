@@ -1840,6 +1840,8 @@
           <tr style="border-bottom: 1px solid var(--border-solid); padding-bottom: 8px;">
             <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Name</th>
             <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Phone</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Email</th>
+            <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Company</th>
             <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Source</th>
             <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Stage</th>
             <th style="padding: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; color: var(--text-muted);">Notes</th>
@@ -1857,7 +1859,7 @@
 
   <!-- Lead Entry / Edit Modal -->
   <div id="leadModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: rgba(0, 0, 0, 0.4); align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-    <div style="background: var(--surface); border: 1px solid var(--border-solid); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-lg); width: 360px; animation: fadeSlideUp 0.3s ease-out;">
+    <div style="background: var(--surface); border: 1px solid var(--border-solid); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-lg); width: 380px; max-height: 90vh; overflow-y: auto; animation: fadeSlideUp 0.3s ease-out;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
         <h3 id="modalTitle" style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-primary); margin: 0;">Add New Lead</h3>
         <button onclick="closeLeadModal()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: var(--text-muted); font-weight: bold; line-height: 1;">&times;</button>
@@ -1871,6 +1873,14 @@
         <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
           <label for="leadPhone" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Phone</label>
           <input type="text" id="leadPhone" placeholder="+1 (555) 019-2834" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; background: var(--surface); color: var(--text-primary);">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
+          <label for="leadEmail" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Email</label>
+          <input type="email" id="leadEmail" placeholder="john@example.com" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; background: var(--surface); color: var(--text-primary);">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
+          <label for="leadCompany" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Company (Optional)</label>
+          <input type="text" id="leadCompany" placeholder="Acme Corp" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; background: var(--surface); color: var(--text-primary);">
         </div>
         <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
           <label for="leadSource" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Source Channel</label>
@@ -1888,6 +1898,10 @@
             <option value="Showed">Showed</option>
             <option value="Closed Won">Closed Won</option>
           </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px; display: flex; flex-direction: column;">
+          <label for="leadExternalId" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">GHL Opportunity ID (Optional)</label>
+          <input type="text" id="leadExternalId" placeholder="ghl_opp_xxxxxx" style="width: 100%; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 12px; background: var(--surface); color: var(--text-primary);">
         </div>
         <div class="form-group" style="margin-bottom: 16px; display: flex; flex-direction: column;">
           <label for="leadNotes" style="display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">Notes</label>

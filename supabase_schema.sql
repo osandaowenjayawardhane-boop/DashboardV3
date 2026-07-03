@@ -79,6 +79,8 @@ CREATE TABLE public.lead (
   pipeline_stage  TEXT NOT NULL,
   name            TEXT,
   phone           TEXT,
+  email           TEXT,
+  company         TEXT,
   notes           TEXT,
   external_id     TEXT,
   created_at      TIMESTAMPTZ DEFAULT now(),
@@ -237,3 +239,26 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER trg_sync_daily_revenue
   AFTER INSERT OR UPDATE OR DELETE ON public.revenue
   FOR EACH ROW EXECUTE FUNCTION public.sync_daily_revenue();
+
+
+-- ══════════════════════════════════════════════════════════════
+-- MIGRATION — Run this on existing databases (safe to re-run)
+-- ══════════════════════════════════════════════════════════════
+ALTER TABLE public.lead ADD COLUMN IF NOT EXISTS email      TEXT;
+ALTER TABLE public.lead ADD COLUMN IF NOT EXISTS company    TEXT;
+ALTER TABLE public.lead ADD COLUMN IF NOT EXISTS external_id TEXT;
+ALTER TABLE public.lead ADD COLUMN IF NOT EXISTS updated_at  TIMESTAMPTZ DEFAULT now();
+
+-- Auto-update updated_at on every row change
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_lead_updated_at ON public.lead;
+CREATE TRIGGER trg_lead_updated_at
+  BEFORE UPDATE ON public.lead
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
