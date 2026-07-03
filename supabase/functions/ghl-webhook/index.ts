@@ -51,12 +51,9 @@ serve(async (req) => {
     // Handle standard GHL Webhook Events
     // Event types: ContactCreated, OpportunityCreated, AppointmentBooked, AppointmentStatusChanged
     if (eventType === "ContactCreated" || eventType === "contact_created") {
-      // 1. Increment departure counters
       if (source === "cold_call") {
-        await service.incrementActivity(userId, challengeId, todayStr, "cold_calls");
         await service.upsertLeadStage(userId, challengeId, "cold_call", "Dialed", payload.contact_id);
       } else {
-        await service.incrementActivity(userId, challengeId, todayStr, "cold_dms");
         await service.upsertLeadStage(userId, challengeId, "cold_dm", "Sent", payload.contact_id);
       }
     } 

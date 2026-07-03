@@ -69,38 +69,7 @@ export async function initUserChallenge(userId) {
       .single();
 
     if (chalErr) throw chalErr;
-    await ensureTodayActivity(userId, chal.id);
   } catch (err) {
     showError("Setup error: " + err.message);
-  }
-}
-
-export async function ensureTodayActivity(userId, challengeId) {
-  const todayStr = new Date().toISOString().split('T')[0];
-  try {
-    const { data, error } = await supabaseClient
-      .from('daily_activity')
-      .select('id')
-      .eq('challenge_id', challengeId)
-      .eq('activity_date', todayStr);
-
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
-      const { error: insertErr } = await supabaseClient
-        .from('daily_activity')
-        .insert({
-          user_id: userId,
-          challenge_id: challengeId,
-          activity_date: todayStr,
-          cold_calls: 0,
-          cold_dms: 0,
-          follow_ups: 0,
-          content_posted: 0
-        });
-      if (insertErr) throw insertErr;
-    }
-  } catch (err) {
-    console.error("Error ensuring today's daily activity:", err.message);
   }
 }

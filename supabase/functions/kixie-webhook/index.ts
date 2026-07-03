@@ -47,9 +47,6 @@ serve(async (req) => {
 
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // Every outbound call dials, increment Cold Calls today
-    await service.incrementActivity(userId, challengeId, todayStr, "cold_calls");
-
     // Upsert lead at Dialed stage
     await service.upsertLeadStage(userId, challengeId, "cold_call", "Dialed", toPhone);
 

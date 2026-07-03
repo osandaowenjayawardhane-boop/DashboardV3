@@ -1,6 +1,5 @@
 // src/dashboard.js
 import { supabaseClient } from './supabase.js';
-import { ensureTodayActivity } from './auth.js';
 
 export let currentChallenge = null;
 let realtimeSubscription = null;
@@ -17,15 +16,11 @@ export async function loadUserChallenge(userId) {
     if (error) throw error;
 
     if (!data || data.length === 0) {
-      // Return and trigger creation
       return false;
     }
 
     currentChallenge = data[0];
     
-    // Ensure today's daily_activity row exists
-    await ensureTodayActivity(userId, currentChallenge.id);
-
     // Render base parameters
     document.getElementById('progressGoal').textContent = '$' + currentChallenge.goal_amount.toLocaleString();
     document.getElementById('goalProgressLimit').textContent = '$' + currentChallenge.goal_amount.toLocaleString();
@@ -49,20 +44,38 @@ export async function fetchAndRenderDashboard() {
   const todayStr = new Date().toISOString().split('T')[0];
 
   try {
-    // 1. Departures - Today Activity (Cold Calls, DMs, Follow-ups, Content)
-    const { data: activityList, error: actErr } = await supabaseClient
-      .from('daily_activity')
-      .select('*')
+    // 1. Departures - Today Activity (Calculated directly from lead records created/updated today)
+    const startOfToday = todayStr + 'T00:00:00.000Z';
+    const { data: todayLeads, error: todayLeadsErr } = await supabaseClient
+      .from('lead')
+      .select('source, created_at, updated_at')
       .eq('challenge_id', chalId)
-      .eq('activity_date', todayStr);
+      .or(`created_at.gte.${startOfToday},updated_at.gte.${startOfToday}`);
 
-    let calls = 0, dms = 0, followUps = 0, content = 0;
-    if (!actErr && activityList && activityList.length > 0) {
-      const act = activityList[0];
-      calls = act.cold_calls || 0;
-      dms = act.cold_dms || 0;
-      followUps = act.follow_ups || 0;
-      content = act.content_posted || 0;
+    let calls = 0;
+    let dms = 0;
+    let followUps = 0;
+    let content = 0; // Hardcoded to 0 since content is not a lead record
+
+    if (!todayLeadsErr && todayLeads) {
+      todayLeads.forEach(l => {
+        const createdDateStr = l.created_at ? l.created_at.split('T')[0] : '';
+        const updatedDateStr = l.updated_at ? l.updated_at.split('T')[0] : '';
+
+        // If created today, count as Call or DM action
+        if (createdDateStr === todayStr) {
+          if (l.source === 'cold_call') {
+            calls++;
+          } else if (l.source === 'cold_dm') {
+            dms++;
+          }
+        }
+        
+        // If updated today but created before today, count as follow-up action
+        if (updatedDateStr === todayStr && createdDateStr !== todayStr) {
+          followUps++;
+        }
+      });
     }
 
     const totalActions = calls + dms + followUps + content;
@@ -252,9 +265,6 @@ export function subscribeToRealtime(userId, challengeId) {
   realtimeSubscription = supabaseClient.channel('live-mission-control')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'challenge', filter: `user_id=eq.${userId}` }, () => {
       loadUserChallenge(userId);
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_activity', filter: `challenge_id=eq.${challengeId}` }, () => {
-      fetchAndRenderDashboard();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'lead', filter: `challenge_id=eq.${challengeId}` }, () => {
       fetchAndRenderDashboard();
