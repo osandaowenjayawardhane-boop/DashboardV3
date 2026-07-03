@@ -87,17 +87,18 @@ serve(async (req) => {
         pipelineStage = source === "cold_call" ? "Dialed" : "Sent";
       }
 
-      await service.upsertLeadStage(userId, challengeId, source, pipelineStage, payload.contact_id);
+      const leadId = payload.id || payload.opportunityId || payload.opportunity_id || payload.contact_id;
+      await service.upsertLeadStage(userId, challengeId, source, pipelineStage, leadId);
     } 
     else if (eventType === "AppointmentBooked" || eventType === "appointment_booked") {
-      // Appointment Booked matches 'Booked' stage
-      await service.upsertLeadStage(userId, challengeId, source, "Booked", payload.contact_id);
+      const leadId = payload.id || payload.opportunityId || payload.opportunity_id || payload.contact_id;
+      await service.upsertLeadStage(userId, challengeId, source, "Booked", leadId);
     } 
     else if (eventType === "AppointmentStatusChanged" || eventType === "appointment_status_changed") {
-      // Status could be: showed, completed, no-show, cancelled
       const status = payload.status || payload.appointmentStatus || "";
       if (status === "showed" || status === "completed" || status === "Showed") {
-        await service.upsertLeadStage(userId, challengeId, source, "Showed", payload.contact_id);
+        const leadId = payload.id || payload.opportunityId || payload.opportunity_id || payload.contact_id;
+        await service.upsertLeadStage(userId, challengeId, source, "Showed", leadId);
       }
     }
 

@@ -100,20 +100,17 @@ export class ActivityService {
    * Upserts a lead pipeline stage. Creates a lead if it doesn't exist, otherwise updates stage.
    */
   async upsertLeadStage(userId: string, challengeId: string, source: "cold_call" | "cold_dm", pipelineStage: string, leadIdentifier?: string) {
-    // If we have a unique leadIdentifier (like phone or email), we can check if it exists
     if (leadIdentifier) {
-      // In this setup, public.lead table doesn't have an email/phone column, but if we pass it, we could identify it
-      // Let's check if there is an existing lead that isn't closed.
+      // Check if there is an existing lead with this GHL Opportunity ID
       const { data: existingLeads, error: selectErr } = await this.supabase
         .from("lead")
         .select("id")
         .eq("challenge_id", challengeId)
-        .eq("source", source)
-        .neq("pipeline_stage", "Closed Won")
+        .eq("external_id", leadIdentifier)
         .limit(1);
 
       if (!selectErr && existingLeads && existingLeads.length > 0) {
-        // Update stage
+        // Update stage of the existing lead
         const { error: updateErr } = await this.supabase
           .from("lead")
           .update({ pipeline_stage: pipelineStage })
@@ -131,7 +128,8 @@ export class ActivityService {
         user_id: userId,
         challenge_id: challengeId,
         source: source,
-        pipeline_stage: pipelineStage
+        pipeline_stage: pipelineStage,
+        external_id: leadIdentifier || null
       });
 
     if (insertErr) throw insertErr;
