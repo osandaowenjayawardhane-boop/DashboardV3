@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$8K Challenge — Mission Control</title>
+  <meta name="description" content="Live mission control for the $8,000 in 28 days business challenge. Watch work become money in real time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* ─── FROM PROVIDED PALETTE ─── */
+      --lightgray-100: #d0d0d0;
+      --lightgray-200: #d7d7d7;
+      --lightgray-300: #d1d5db;
+      --gainsboro-100: #e6e6e6;
+      --whitesmoke-100: #f2f2f2;
+      --whitesmoke-200: #ecf0f3;
+      --whitesmoke-300: #f6f6f6;
+      --whitesmoke-400: #ebebeb;
+      --whitesmoke-500: #eef0f2;
+      --whitesmoke-600: #ebeef1;
+      --whitesmoke-700: #f3f4f6;
+      --whitesmoke-800: #eee;
+      --whitesmoke-900: rgba(239,239,238,1);
+      --white-100: #fff;
+      --white-200: #ffffff;
+      --white-300: rgba(255,255,255,0.3);
+      --white-500: #fafafa;
+      --white-700: rgba(250,250,250,1);
+      --mediumpurple-100: #9b8ae7;
+      --coral-100: #ef6b51;
+      --black-100: #000000;
+      --black-300: #131628;
+      --black-400: rgba(0,0,0,0.15);
+      --black-600: rgba(0,0,0,0.05);
+      --black-800: rgba(0,0,0,0.7);
+      --blueviolet-100: #8f00ff;
+      --blueviolet-200: #4535cc;
+      --blueviolet-300: #9728ff;
+      --slategray-100: #607179;
+      --blue-100: #6f00ff;
+      --darkgray-100: #b3b3b3;
+      --darkgray-200: #9fa1a3;
+      --darkgray-400: #9b9b9b;
+      --darkgray-500: #9ca3af;
+      --aliceblue-100: #e6edf2;
+      --silver-100: #b7b7b7;
+      --dimgray-100: rgba(80,80,80,.1);
+      --black: rgb(39, 36, 60);
+      --purple: rgb(130, 59, 157);
+      --mediumblue: rgb(105, 11, 241);
+      --darksalmon: rgb(211, 137, 91);
+      --steelblue: rgb(84, 89, 138);
+      --lightslategray: rgb(137, 133, 167);
+      --rosybrown: rgb(212, 153, 151);
+      --burlywood: rgb(242, 180, 137);
+      --lightsteelblue: rgb(185, 184, 207);
+      --thistle: rgb(226, 189, 221);
+
+      /* ─── SEMANTIC TOKENS (mapped from palette) ─── */
+      --bg: var(--white-500);
+      --surface: var(--white-200);
+      --surface-raised: var(--whitesmoke-700);
+      --border: var(--black-600);
+      --border-solid: var(--gainsboro-100);
+      --border-hover: var(--black-400);
+
+      --text: var(--black);
+      --text-secondary: var(--steelblue);
+      --text-muted: var(--darkgray-500);
+      --text-dim: var(--lightgray-300);
+      --text-faint: var(--lightgray-200);
+
+      --line-1: var(--mediumblue);
+      --line-1-glow: rgba(105, 11, 241, 0.18);
+      --line-1-subtle: rgba(105, 11, 241, 0.06);
+      --line-1-track: rgba(105, 11, 241, 0.10);
+
+      --line-2: var(--coral-100);
+      --line-2-glow: rgba(239, 107, 81, 0.18);
+      --line-2-subtle: rgba(239, 107, 81, 0.06);
+      --line-2-track: rgba(239, 107, 81, 0.10);
+
+      --accent: var(--blueviolet-200);
+      --accent-glow: rgba(69, 53, 204, 0.20);
+      --accent-subtle: rgba(69, 53, 204, 0.07);
+      --accent-light: var(--mediumpurple-100);
+
+      --neutral: var(--darkgray-400);
+      --neutral-subtle: var(--whitesmoke-400);
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --radius-xs: 6px;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    /* ─── RESET & BASE ─── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(105,11,241,0.015), transparent),
+        radial-gradient(ellipse 50% 40% at 80% 70%, rgba(239,107,81,0.01), transparent),
+        var(--bg);
+    }
+
+    /* ─── DASHBOARD GRID ─── */
+    .dashboard {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100vh;
+      min-height: 640px;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      gap: 12px;
+    }
+
+    /* ─── HEADER ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 12px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .header-brand .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      animation: livePulse 2s ease-in-out infinite;
+    }
+
+    .header-brand h1 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .progress-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .progress-labels {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .progress-current {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .progress-divider {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin: 0 1px;
+    }
+
+    .progress-goal {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 4px;
+      background: var(--gainsboro-100);
+      border-radius: 2px;
+      position: relative;
+      overflow: visible;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--line-1), var(--accent));
+      width: 0%;
+      position: relative;
+      transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent-glow);
+      animation: progressGlow 2s ease-in-out infinite;
+    }
+
+    .progress-shimmer {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .day-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .day-counter strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .header-percentage {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-subtle);
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .logout-button {
+      background: none;
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius-xs);
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logout-button:hover {
+      background: var(--whitesmoke-100);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+
+    /* ─── MAIN CONTENT ─── */
+    .main {
+      display: grid;
+      grid-template-columns: 240px 1fr 260px;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    /* ─── PANELS (shared) ─── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(105,11,241,0.06), transparent);
+      z-index: 1;
+    }
+
+    .panel-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border-solid);
+    }
+
+    .panel-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .panel-body {
+      flex: 1;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    /* ─── DEPARTURES PANEL ─── */
+    .departure-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      cursor: default;
+    }
+
+    .departure-item:hover {
+      background: var(--whitesmoke-700);
+      border-color: var(--gainsboro-100);
+    }
+
+    .departure-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .departure-dot.purple { background: var(--line-1); box-shadow: 0 0 6px var(--line-1-glow); }
+    .departure-dot.coral { background: var(--line-2); box-shadow: 0 0 6px var(--line-2-glow); }
+    .departure-dot.neutral { background: var(--neutral); }
+
+    .departure-info { flex: 1; min-width: 0; }
+
+    .departure-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .departure-target {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 1px;
+    }
+
+    .departure-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .departure-bar-track {
+      width: 100%;
+      height: 3px;
+      background: var(--whitesmoke-400);
+      border-radius: 2px;
+      margin-top: 8px;
+    }
+
+    .departure-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .departure-bar-fill.purple { background: linear-gradient(90deg, var(--mediumpurple-100), var(--line-1)); }
+    .departure-bar-fill.coral { background: linear-gradient(90deg, var(--burlywood), var(--line-2)); }
+    .departure-bar-fill.neutral { background: var(--lightgray-100); }
+
+    .departures-total {
+      margin-top: auto;
+      padding: 14px 12px;
+      border-top: 1px solid var(--border-solid);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .departures-total-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .departures-total-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ─── TRANSIT MAP (center) ─── */
+    .transit-section {
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .transit-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(105,11,241,0.06), transparent);
+      z-index: 1;
+    }
+
+    .transit-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px 10px;
+      border-bottom: 1px solid var(--border-solid);
+    }
+
+    .transit-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .transit-legend {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-line {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .legend-line.purple { background: var(--line-1); }
+    .legend-line.coral { background: var(--line-2); }
+
+    .legend-text {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .transit-map {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 0;
+      min-height: 0;
+    }
+
+    .transit-map svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .station-ring {
+      fill: none;
+      stroke-width: 1;
+      opacity: 0;
+      animation: stationPing 3s ease-out infinite;
+    }
+
+    .station-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      fill: var(--darkgray-500);
+      text-anchor: middle;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .station-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      fill: var(--black);
+      text-anchor: middle;
+    }
+
+    .merge-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      fill: var(--blueviolet-200);
+      text-anchor: middle;
+    }
+
+    /* ─── REVENUE TERMINAL ─── */
+    .terminal-body {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .revenue-block {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-solid);
+    }
+
+    .revenue-block:last-child { border-bottom: none; }
+
+    .revenue-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .revenue-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .revenue-value.hero {
+      font-size: 36px;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+    }
+
+    .revenue-value.today {
+      font-size: 22px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .revenue-value.units {
+      font-size: 18px;
+      color: var(--steelblue);
+    }
+
+    .units-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .goal-progress-mini { margin-top: 8px; }
+
+    .goal-bar-track {
+      width: 100%;
+      height: 6px;
+      background: var(--whitesmoke-400);
+      border-radius: 3px;
+    }
+
+    .goal-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--line-1), var(--accent));
+      width: 0%;
+      transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+    }
+
+    .goal-bar-fill::after {
+      content: '';
+      position: absolute;
+      right: 0; top: -1px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent-glow);
+    }
+
+    .goal-text {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .goal-text span {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+    }
+
+    /* ─── FOOTER / CALENDAR ─── */
+    .footer {
+      background: var(--surface);
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(105,11,241,0.06), transparent);
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .calendar-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .calendar-stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .calendar-stat {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .calendar-stat strong {
+      color: var(--steelblue);
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(28, 1fr);
+      gap: 4px;
+      align-items: end;
+      height: 64px;
+    }
+
+    .calendar-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+      cursor: default;
+      position: relative;
+    }
+
+    .calendar-bar-wrapper {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .calendar-bar {
+      width: 100%;
+      max-width: 28px;
+      border-radius: 3px 3px 1px 1px;
+      min-height: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .calendar-bar.has-revenue {
+      background: linear-gradient(180deg, var(--accent), var(--mediumpurple-100));
+    }
+
+    .calendar-bar.zero {
+      background: var(--whitesmoke-400);
+      height: 2px !important;
+    }
+
+    .calendar-bar.future {
+      background: none;
+      border: 1px dashed var(--lightgray-300);
+      height: 100% !important;
+      border-radius: 3px;
+    }
+
+    .calendar-bar.today-bar {
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .calendar-day:hover .calendar-bar.has-revenue {
+      filter: brightness(1.1);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .calendar-day-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      color: var(--text-dim);
+      line-height: 1;
+    }
+
+    .calendar-day.is-today .calendar-day-label {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .calendar-tooltip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--black-300);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-xs);
+      padding: 6px 10px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 10;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--white-100);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .calendar-day:hover .calendar-tooltip { opacity: 1; }
+
+    /* ─── STATUS BAR ─── */
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-solid);
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: livePulse 2s ease-in-out infinite;
+    }
+
+    .status-text {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .status-right {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    @keyframes progressGlow {
+      0%, 100% { box-shadow: 0 0 6px var(--accent), 0 0 12px var(--accent-glow); }
+      50% { box-shadow: 0 0 10px var(--accent), 0 0 22px var(--accent-glow); }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      50%, 100% { transform: translateX(200%); }
+    }
+
+    @keyframes stationPing {
+      0% { r: 8; opacity: 0.4; }
+      100% { r: 20; opacity: 0; }
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+    }
+    .fade-in-d1 { animation-delay: 0.1s; }
+    .fade-in-d2 { animation-delay: 0.2s; }
+    .fade-in-d3 { animation-delay: 0.3s; }
+    .fade-in-d4 { animation-delay: 0.4s; }
+
+    /* ═══════════════════════════════════════════ */
+    /* ─── AUTH & SETUP UI                     ─── */
+    /* ═══════════════════════════════════════════ */
+    .auth-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--bg);
+      padding: 20px;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius);
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .auth-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .auth-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+    }
+
+    .form-group input {
+      background: var(--whitesmoke-300);
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-subtle);
+    }
+
+    .auth-btn {
+      width: 100%;
+      background: var(--accent);
+      color: var(--white-100);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      margin-top: 8px;
+    }
+    .auth-btn:hover {
+      background: var(--blueviolet-200);
+    }
+    .auth-btn:active {
+      transform: scale(0.98);
+    }
+
+    .auth-switch {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .auth-switch span {
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .auth-error {
+      color: var(--coral-100);
+      font-size: 12px;
+      margin-top: 12px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .setup-toggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 16px;
+      transition: color 0.2s;
+    }
+    .setup-toggle:hover {
+      color: var(--text);
+    }
+
+    .setup-panel {
+      display: none;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--border-solid);
+    }
+
+    /* ═══════════════════════════════════════════ */
+    /* ─── RESPONSIVE DESIGN                  ─── */
+    /* ═══════════════════════════════════════════ */
+
+    /* ── Small Desktop / Large Laptop ── */
+    @media (max-width: 1280px) {
+      .main {
+        grid-template-columns: 210px 1fr 230px;
+      }
+      .revenue-value.hero {
+        font-size: 30px;
+      }
+      .departure-count {
+        font-size: 16px;
+      }
+    }
+
+    /* ── Tablet Landscape ── */
+    @media (max-width: 1024px) {
+      .dashboard {
+        height: auto;
+        min-height: 100vh;
+        padding: 12px 16px;
+        gap: 10px;
+      }
+
+      .main {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+      }
+
+      .transit-section {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        min-height: 280px;
+      }
+
+      .panel:nth-child(1) { grid-row: 2; grid-column: 1; }
+      .panel:nth-child(3) { grid-row: 2; grid-column: 2; }
+
+      .header {
+        gap: 16px;
+        padding: 10px 16px;
+      }
+
+      .header-brand h1 {
+        font-size: 12px;
+      }
+
+      .calendar-grid {
+        gap: 3px;
+        height: 56px;
+      }
+    }
+
+    /* ── Tablet Portrait ── */
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: 10px 12px;
+        gap: 8px;
+      }
+
+      .header {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 14px;
+      }
+
+      .header-brand {
+        order: 1;
+      }
+
+      .header-meta {
+        order: 2;
+        margin-left: auto;
+      }
+
+      .progress-container {
+        order: 3;
+        flex-basis: 100%;
+        gap: 10px;
+      }
+
+      .main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+
+      .transit-section {
+        grid-column: 1;
+        grid-row: 2;
+        min-height: 260px;
+      }
+
+      .panel:nth-child(1) {
+        grid-row: 1;
+        grid-column: 1;
+      }
+
+      .panel:nth-child(3) {
+        grid-row: 3;
+        grid-column: 1;
+      }
+
+      .panel-body {
+        padding: 12px 16px;
+      }
+
+      .terminal-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 16px;
+        padding: 16px;
+      }
+
+      .revenue-block {
+        padding: 12px 0;
+      }
+
+      .revenue-value.hero {
+        font-size: 28px;
+      }
+
+      .revenue-value.today {
+        font-size: 20px;
+      }
+
+      .calendar-grid {
+        gap: 2px;
+        height: 50px;
+      }
+
+      .calendar-day-label {
+        font-size: 7px;
+      }
+
+      .calendar-stats {
+        gap: 10px;
+      }
+
+      .calendar-stat {
+        font-size: 9px;
+      }
+
+      .footer {
+        padding: 12px 16px;
+      }
+
+      .transit-header {
+        padding: 10px 16px 8px;
+      }
+    }
+
+    /* ── Large Phone ── */
+    @media (max-width: 600px) {
+      .dashboard {
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .header-brand h1 {
+        font-size: 11px;
+        letter-spacing: 0.06em;
+      }
+
+      .progress-current {
+        font-size: 13px;
+      }
+
+      .progress-goal {
+        font-size: 11px;
+      }
+
+      .day-counter {
+        font-size: 11px;
+      }
+
+      .panel-header {
+        padding: 14px 14px 10px;
+      }
+
+      .panel-label {
+        font-size: 9px;
+      }
+
+      .departure-item {
+        padding: 8px 10px;
+        gap: 8px;
+      }
+
+      .departure-name {
+        font-size: 11px;
+      }
+
+      .departure-count {
+        font-size: 15px;
+      }
+
+      .transit-map {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px 0;
+      }
+
+      .transit-map svg {
+        min-width: 580px;
+        height: auto;
+      }
+
+      .terminal-body {
+        grid-template-columns: 1fr 1fr;
+        padding: 12px;
+        gap: 0 12px;
+      }
+
+      .revenue-value.hero {
+        font-size: 24px;
+      }
+
+      .revenue-value.today {
+        font-size: 18px;
+      }
+
+      .revenue-value.units {
+        font-size: 16px;
+      }
+
+      .calendar-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .calendar-grid {
+        gap: 2px;
+        height: 44px;
+      }
+
+      .calendar-bar {
+        max-width: 18px;
+      }
+
+      .calendar-day-label {
+        font-size: 6px;
+      }
+
+      .status-row {
+        margin-top: 8px;
+        padding-top: 8px;
+      }
+
+      .footer {
+        padding: 10px 12px;
+      }
+    }
+
+    /* ── Phone ── */
+    @media (max-width: 480px) {
+      .header {
+        padding: 8px 10px;
+        border-radius: 10px;
+      }
+
+      .header-brand h1 {
+        font-size: 10px;
+      }
+
+      .header-percentage {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .panel, .transit-section, .footer {
+        border-radius: 10px;
+      }
+
+      .panel-body {
+        padding: 10px 12px;
+        gap: 6px;
+      }
+
+      .departure-item {
+        padding: 7px 8px;
+        gap: 6px;
+        border-radius: 6px;
+      }
+
+      .departure-dot {
+        width: 8px;
+        height: 8px;
+      }
+
+      .departure-name {
+        font-size: 11px;
+      }
+
+      .departure-target {
+        font-size: 9px;
+      }
+
+      .departure-count {
+        font-size: 14px;
+      }
+
+      .departure-bar-track {
+        margin-top: 5px;
+      }
+
+      .departures-total {
+        padding: 10px 8px;
+      }
+
+      .departures-total-count {
+        font-size: 14px;
+      }
+
+      .transit-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 10px 12px 8px;
+      }
+
+      .transit-map svg {
+        min-width: 520px;
+      }
+
+      .legend-text {
+        font-size: 9px;
+      }
+
+      .terminal-body {
+        padding: 10px;
+        gap: 0 10px;
+      }
+
+      .revenue-block {
+        padding: 10px 0;
+      }
+
+      .revenue-value.hero {
+        font-size: 22px;
+      }
+
+      .revenue-value.today {
+        font-size: 16px;
+      }
+
+      .revenue-value.units {
+        font-size: 14px;
+      }
+
+      .revenue-label {
+        font-size: 9px;
+        margin-bottom: 4px;
+      }
+
+      .units-sub {
+        font-size: 10px;
+      }
+
+      .goal-bar-fill::after {
+        width: 6px;
+        height: 6px;
+      }
+
+      .calendar-grid {
+        height: 38px;
+        gap: 1.5px;
+      }
+
+      .calendar-bar {
+        max-width: 14px;
+        border-radius: 2px 2px 1px 1px;
+      }
+
+      .calendar-stats {
+        flex-wrap: wrap;
+        gap: 6px 12px;
+      }
+
+      .status-text {
+        font-size: 9px;
+      }
+
+      .status-right {
+        font-size: 9px;
+      }
+    }
+
+    /* ── Small Phone ── */
+    @media (max-width: 400px) {
+      .dashboard {
+        padding: 6px;
+        gap: 5px;
+      }
+
+      .header {
+        gap: 6px;
+        padding: 6px 8px;
+      }
+
+      .header-brand h1 {
+        font-size: 9px;
+      }
+
+      .progress-current {
+        font-size: 12px;
+      }
+
+      .day-counter {
+        font-size: 10px;
+      }
+
+      .header-percentage {
+        font-size: 9px;
+      }
+
+      .panel-header {
+        padding: 10px 10px 8px;
+      }
+
+      .departure-item {
+        padding: 6px;
+      }
+
+      .revenue-value.hero {
+        font-size: 20px;
+      }
+
+      .transit-map svg {
+        min-width: 480px;
+      }
+
+      .calendar-title {
+        font-size: 9px;
+      }
+
+      .calendar-stat {
+        font-size: 8px;
+      }
+
+      .calendar-grid {
+        height: 32px;
+        gap: 1px;
+      }
+
+      .calendar-day-label {
+        font-size: 5px;
+      }
+    }
+
+    /* ── High-DPI / Retina adjustments ── */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      .progress-track,
+      .departure-bar-track,
+      .goal-bar-track {
+        transform: translateZ(0);
+      }
+    }
+
+    /* ── Ultra-wide monitors ── */
+    @media (min-width: 1800px) {
+      .dashboard {
+        max-width: 1700px;
+        padding: 20px 28px;
+        gap: 16px;
+      }
+
+      .main {
+        grid-template-columns: 270px 1fr 290px;
+      }
+
+      .revenue-value.hero {
+        font-size: 40px;
+      }
+
+      .departure-count {
+        font-size: 20px;
+      }
+
+      .calendar-grid {
+        height: 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ DATABASE SETUP & AUTH SCREEN ═══ -->
+  <div class="auth-container" id="authContainer">
+    <div class="auth-card">
+      <button class="setup-toggle" onclick="toggleSetupPanel()" title="Configure Supabase Database">⚙</button>
+      
+      <div class="auth-header">
+        <div class="live-dot"></div>
+        <h2 id="authTitle">Sign In to Mission Control</h2>
+      </div>
+
+      <!-- Auth Form -->
+      <form id="authForm" onsubmit="handleAuth(event)">
+        <div class="form-group">
+          <label for="authEmail">Email</label>
+          <input type="email" id="authEmail" required placeholder="you@domain.com">
+        </div>
+        <div class="form-group">
+          <label for="authPassword">Password</label>
+          <input type="password" id="authPassword" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="auth-btn" id="submitAuthBtn">Sign In</button>
+        <div class="auth-switch">
+          <span id="switchAuthModeText" onclick="toggleAuthMode()">Create New Account</span>
+        </div>
+      </form>
+      <div class="auth-error" id="authError"></div>
+
+      <!-- Settings Panel -->
+      <div class="setup-panel" id="setupPanel">
+        <h3 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px;">Supabase Credentials</h3>
+        <div class="form-group">
+          <label for="supabaseUrl">Project URL</label>
+          <input type="text" id="supabaseUrl" placeholder="https://xxxx.supabase.co">
+        </div>
+        <div class="form-group">
+          <label for="supabaseKey">Anon Key</label>
+          <input type="password" id="supabaseKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+        </div>
+        <button type="button" class="auth-btn" style="background: var(--text-secondary);" onclick="saveDatabaseConfig()">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <div class="dashboard" id="dashboard" style="display: none;">
+
+    <!-- ═══ HEADER ═══ -->
+    <header class="header fade-in">
+      <div class="header-brand">
+        <div class="live-dot"></div>
+        <h1>The $8K Challenge</h1>
+      </div>
+      <div class="progress-container">
+        <div class="progress-labels">
+          <span class="progress-current" id="progressCurrent">$0</span>
+          <span class="progress-divider">/</span>
+          <span class="progress-goal" id="progressGoal">$8,000</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width: 0%">
+            <div class="progress-shimmer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="day-counter" id="dayCounter">DAY <strong>0</strong> / 28</div>
+        <div class="header-percentage" id="headerPct">0%</div>
+        <button class="logout-button" onclick="handleLogout()">Sign Out</button>
+      </div>
+    </header>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="main">
+
+      <!-- ─── DEPARTURES ─── -->
+      <div class="panel fade-in fade-in-d1" id="departuresPanel">
+        <div class="panel-header">
+          <div class="panel-label">Departures · Today</div>
+        </div>
+        <div class="panel-body">
+          <div class="departure-item">
+            <div class="departure-dot purple"></div>
+            <div class="departure-info">
+              <div class="departure-name">Cold Calls</div>
+              <div class="departure-target">Goal: 50</div>
+            </div>
+            <div class="departure-count" id="depCallsCount">0</div>
+          </div>
+          <div class="departure-bar-track">
+            <div class="departure-bar-fill purple" id="depCallsBar" style="width: 0%"></div>
+          </div>
+
+          <div class="departure-item">
+            <div class="departure-dot coral"></div>
+            <div class="departure-info">
+              <div class="departure-name">Cold DMs</div>
+              <div class="departure-target">Goal: 100</div>
+            </div>
+            <div class="departure-count" id="depDmsCount">0</div>
+          </div>
+          <div class="departure-bar-track">
+            <div class="departure-bar-fill coral" id="depDmsBar" style="width: 0%"></div>
+          </div>
+
+          <div class="departure-item">
+            <div class="departure-dot neutral"></div>
+            <div class="departure-info">
+              <div class="departure-name">Follow-ups</div>
+              <div class="departure-target">Goal: 30</div>
+            </div>
+            <div class="departure-count" id="depFollowupsCount">0</div>
+          </div>
+          <div class="departure-bar-track">
+            <div class="departure-bar-fill neutral" id="depFollowupsBar" style="width: 0%"></div>
+          </div>
+
+          <div class="departure-item">
+            <div class="departure-dot neutral"></div>
+            <div class="departure-info">
+              <div class="departure-name">Content Posted</div>
+              <div class="departure-target">Goal: 5</div>
+            </div>
+            <div class="departure-count" id="depContentCount">0</div>
+          </div>
+          <div class="departure-bar-track">
+            <div class="departure-bar-fill neutral" id="depContentBar" style="width: 0%"></div>
+          </div>
+
+          <div class="departures-total">
+            <span class="departures-total-label">Total Actions</span>
+            <span class="departures-total-count" id="depTotalCount">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── TRANSIT MAP ─── -->
+      <div class="transit-section fade-in fade-in-d2">
+        <div class="transit-header">
+          <div class="transit-title">Pipeline Network</div>
+          <div class="transit-legend">
+            <div class="legend-item">
+              <div class="legend-line purple"></div>
+              <span class="legend-text">Cold Calls</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-line coral"></div>
+              <span class="legend-text">Cold DMs</span>
+            </div>
+          </div>
+        </div>
+        <div class="transit-map">
+          <svg viewBox="0 0 1000 310" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <filter id="glowPurple" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="glowCoral" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="glowAccent" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="glowAccentSoft" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <!-- Track glow layers -->
+            <path d="M -10,95 L 760,95 C 820,95 870,115 940,148"
+                  stroke="rgba(105,11,241,0.08)" stroke-width="16" fill="none" stroke-linecap="round"/>
+            <path d="M -10,215 L 760,215 C 820,215 870,195 940,162"
+                  stroke="rgba(239,107,81,0.08)" stroke-width="16" fill="none" stroke-linecap="round"/>
+
+            <!-- Track main lines -->
+            <path id="blueLine" d="M -10,95 L 760,95 C 820,95 870,115 940,148"
+                  stroke="rgb(105,11,241)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
+            <path id="amberLine" d="M -10,215 L 760,215 C 820,215 870,195 940,162"
+                  stroke="#ef6b51" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
+
+            <!-- ═══ PURPLE LINE STATIONS (Cold Calls) ═══ -->
+            <circle cx="80" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
+            <circle cx="80" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:0s"/>
+            <text x="80" y="75" class="station-count" id="stageCallsDialed" style="font-size:13px">0</text>
+            <text x="80" y="122" class="station-label">Dialed</text>
+
+            <circle cx="250" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
+            <circle cx="250" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:0.6s"/>
+            <text x="250" y="75" class="station-count" id="stageCallsPickedUp" style="font-size:13px">0</text>
+            <text x="250" y="122" class="station-label">Picked Up</text>
+
+            <circle cx="420" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
+            <circle cx="420" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:1.2s"/>
+            <text x="420" y="75" class="station-count" id="stageCallsBooked" style="font-size:13px">0</text>
+            <text x="420" y="122" class="station-label">Booked</text>
+
+            <circle cx="590" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
+            <circle cx="590" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:1.8s"/>
+            <text x="590" y="75" class="station-count" id="stageCallsShowed" style="font-size:13px">0</text>
+            <text x="590" y="122" class="station-label">Showed</text>
+
+            <circle cx="760" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
+            <circle cx="760" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:2.4s"/>
+            <text x="760" y="75" class="station-count" id="stageCallsClosed" style="font-size:13px">0</text>
+            <text x="760" y="122" class="station-label">Closed</text>
+
+            <!-- ═══ CORAL LINE STATIONS (Cold DMs) ═══ -->
+            <circle cx="80" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
+            <circle cx="80" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:0.3s"/>
+            <text x="80" y="195" class="station-count" id="stageDmsSent" style="font-size:13px">0</text>
+            <text x="80" y="242" class="station-label">Sent</text>
+
+            <circle cx="250" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
+            <circle cx="250" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:0.9s"/>
+            <text x="250" y="195" class="station-count" id="stageDmsReplied" style="font-size:13px">0</text>
+            <text x="250" y="242" class="station-label">Replied</text>
+
+            <circle cx="420" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
+            <circle cx="420" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:1.5s"/>
+            <text x="420" y="195" class="station-count" id="stageDmsBooked" style="font-size:13px">0</text>
+            <text x="420" y="242" class="station-label">Booked</text>
+
+            <circle cx="590" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
+            <circle cx="590" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:2.1s"/>
+            <text x="590" y="195" class="station-count" id="stageDmsShowed" style="font-size:13px">0</text>
+            <text x="590" y="242" class="station-label">Showed</text>
+
+            <circle cx="760" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
+            <circle cx="760" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:2.7s"/>
+            <text x="760" y="195" class="station-count" id="stageDmsClosed" style="font-size:13px">0</text>
+            <text x="760" y="242" class="station-label">Closed</text>
+
+            <!-- ═══ MERGE NODE (Revenue) ═══ -->
+            <circle cx="955" cy="155" r="18" fill="white" stroke="#4535cc" stroke-width="3" filter="url(#glowAccent)"/>
+            <circle cx="955" cy="155" r="24" fill="none" stroke="#4535cc" stroke-width="1" opacity="0.15" filter="url(#glowAccentSoft)">
+              <animate attributeName="r" from="18" to="34" dur="2.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" from="0.3" to="0" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <text x="955" y="152" class="merge-label" style="font-size:10px">$</text>
+            <text x="955" y="164" style="font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;fill:#9ca3af;text-anchor:middle;">REV</text>
+
+            <!-- Animated trains (Purple line) -->
+            <circle r="5" fill="rgb(105,11,241)" opacity="0.85" filter="url(#glowPurple)">
+              <animateMotion dur="6s" repeatCount="indefinite" begin="0s"><mpath href="#blueLine"/></animateMotion>
+            </circle>
+            <circle r="4" fill="rgb(105,11,241)" opacity="0.5">
+              <animateMotion dur="6s" repeatCount="indefinite" begin="-2s"><mpath href="#blueLine"/></animateMotion>
+            </circle>
+            <circle r="3" fill="rgb(105,11,241)" opacity="0.25">
+              <animateMotion dur="6s" repeatCount="indefinite" begin="-4s"><mpath href="#blueLine"/></animateMotion>
+            </circle>
+
+            <!-- Animated trains (Coral line) -->
+            <circle r="5" fill="#ef6b51" opacity="0.85" filter="url(#glowCoral)">
+              <animateMotion dur="5.5s" repeatCount="indefinite" begin="-1s"><mpath href="#amberLine"/></animateMotion>
+            </circle>
+            <circle r="4" fill="#ef6b51" opacity="0.5">
+              <animateMotion dur="5.5s" repeatCount="indefinite" begin="-3s"><mpath href="#amberLine"/></animateMotion>
+            </circle>
+            <circle r="3" fill="#ef6b51" opacity="0.25">
+              <animateMotion dur="5.5s" repeatCount="indefinite" begin="-5s"><mpath href="#amberLine"/></animateMotion>
+            </circle>
+
+            <!-- Direction arrows -->
+            <text x="165" y="88" style="font-size:8px;fill:rgb(105,11,241);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="335" y="88" style="font-size:8px;fill:rgb(105,11,241);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="505" y="88" style="font-size:8px;fill:rgb(105,11,241);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="675" y="88" style="font-size:8px;fill:rgb(105,11,241);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+
+            <text x="165" y="208" style="font-size:8px;fill:#ef6b51;opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="335" y="208" style="font-size:8px;fill:#ef6b51;opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="505" y="208" style="font-size:8px;fill:#ef6b51;opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="675" y="208" style="font-size:8px;fill:#ef6b51;opacity:0.3;font-family:Inter,sans-serif;">›</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- ─── REVENUE TERMINAL ─── -->
+      <div class="panel fade-in fade-in-d3" id="terminalPanel">
+        <div class="panel-header">
+          <div class="panel-label">Revenue Terminal</div>
+        </div>
+        <div class="terminal-body">
+          <div class="revenue-block">
+            <div class="revenue-label">Total Revenue</div>
+            <div class="revenue-value hero" id="revTotal">$0</div>
+          </div>
+          <div class="revenue-block">
+            <div class="revenue-label">Today</div>
+            <div class="revenue-value today" id="revToday">$0</div>
+          </div>
+          <div class="revenue-block">
+            <div class="revenue-label">Units Sold</div>
+            <div class="revenue-value units" id="unitsTotal">0</div>
+            <div class="units-sub"><span id="unitsToday">0</span> today</div>
+          </div>
+          <div class="revenue-block">
+            <div class="revenue-label">Challenge Progress</div>
+            <div class="goal-progress-mini">
+              <div class="goal-bar-track">
+                <div class="goal-bar-fill" id="goalFill" style="width: 0%"></div>
+              </div>
+              <div class="goal-text">
+                <span id="goalPct">0%</span>
+                <span id="goalProgressLimit">$8,000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer fade-in fade-in-d4">
+      <div class="calendar-header">
+        <div class="calendar-title">28-Day Revenue History</div>
+        <div class="calendar-stats">
+          <div class="calendar-stat">Best Day: <strong id="statBestDay">$0</strong></div>
+          <div class="calendar-stat">Avg: <strong id="statAvgDay">$0</strong></div>
+          <div class="calendar-stat">Active: <strong id="statActiveDays">0</strong> / <span id="statChallengeDay">28</span> days</div>
+        </div>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div class="status-row">
+        <div class="status-left">
+          <div class="status-dot"></div>
+          <span class="status-text">Live · Updated just now</span>
+        </div>
+        <div class="status-right" id="clock"></div>
+      </div>
+    </footer>
+
+  <!-- ═══ DEVELOPER PANEL (Ctrl + Shift + D) ═══ -->
+  <div id="devPanel" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 1000; background: var(--surface); border: 1px solid var(--border-solid); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-lg); width: 260px; animation: fadeSlideUp 0.3s ease-out;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary);">Developer Panel</h3>
+      <button onclick="closeDevPanel()" style="background: none; border: none; font-size: 14px; cursor: pointer; color: var(--text-muted); font-weight: bold; line-height: 1;">&times;</button>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+      <button onclick="devAddColdCall()" style="background: var(--line-1-subtle); border: 1px solid rgba(105, 11, 241, 0.2); color: var(--line-1); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Cold Call</button>
+      <button onclick="devAddColdDm()" style="background: var(--line-2-subtle); border: 1px solid rgba(239, 107, 81, 0.2); color: var(--line-2); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Cold DM</button>
+      <button onclick="devAddFollowUp()" style="background: var(--whitesmoke-100); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Follow Up</button>
+      <button onclick="devAddContent()" style="background: var(--whitesmoke-100); border: 1px solid var(--border-solid); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Content</button>
+      <button onclick="devAddSale()" style="background: var(--accent-subtle); border: 1px solid var(--accent); color: var(--accent); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">+ Sale ($100)</button>
+      <button onclick="devResetToday()" style="background: rgba(239, 107, 81, 0.1); border: 1px solid var(--coral-100); color: var(--coral-100); border-radius: var(--radius-xs); padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 6px;">Reset Today's Data</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
