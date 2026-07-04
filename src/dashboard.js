@@ -197,6 +197,28 @@ export async function fetchAndRenderDashboard() {
       }
     }
 
+    // Dynamic Waypoint Dots Positioning
+    const progressDot = document.getElementById('progressDot');
+    const goalDot = document.getElementById('goalDot');
+    if (progressDot) progressDot.style.left = Math.min(progressPct, 100) + '%';
+    if (goalDot) goalDot.style.left = Math.min(progressPct, 100) + '%';
+
+    // Checkpoint Milestone Highlights
+    const floatPct = parseFloat(progressPct) || 0;
+    const p25 = document.getElementById('progressMilestone25');
+    const p50 = document.getElementById('progressMilestone50');
+    const p75 = document.getElementById('progressMilestone75');
+    if (p25) p25.classList.toggle('active', floatPct >= 25);
+    if (p50) p50.classList.toggle('active', floatPct >= 50);
+    if (p75) p75.classList.toggle('active', floatPct >= 75);
+
+    const g25 = document.getElementById('goalMilestone25');
+    const g50 = document.getElementById('goalMilestone50');
+    const g75 = document.getElementById('goalMilestone75');
+    if (g25) g25.classList.toggle('active', floatPct >= 25);
+    if (g50) g50.classList.toggle('active', floatPct >= 50);
+    if (g75) g75.classList.toggle('active', floatPct >= 75);
+
     document.getElementById('goalPct').textContent = progressPct + '%';
     document.getElementById('headerPct').textContent = progressPct + '%';
 
