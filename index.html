@@ -106,8 +106,6 @@
     html, body {
       height: 100%;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
@@ -115,10 +113,31 @@
     }
 
     body {
+      /* ── Full-viewport background image ── */
       background:
-        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(105,11,241,0.015), transparent),
-        radial-gradient(ellipse 50% 40% at 80% 70%, rgba(239,107,81,0.01), transparent),
-        var(--bg);
+        linear-gradient(rgba(5, 5, 20, 0.45), rgba(5, 5, 20, 0.45)),
+        url('/bg.jpg') center center / cover no-repeat fixed;
+      color: #e8e8f0;
+    }
+
+    /* ── Glass token overrides (dark mode adaptation) ── */
+    :root {
+      --glass-bg:          rgba(18, 18, 38, 0.55);
+      --glass-bg-header:   rgba(12, 12, 30, 0.70);
+      --glass-border:      rgba(255, 255, 255, 0.10);
+      --glass-border-top:  rgba(255, 255, 255, 0.18);
+      --glass-blur:        blur(18px) saturate(160%);
+      --glass-shadow:      0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.06) inset;
+      /* Override semantic text tokens for dark bg */
+      --text:              #e8e8f0;
+      --text-secondary:    rgba(180,180,210,0.85);
+      --text-muted:        rgba(160,160,190,0.75);
+      --text-dim:          rgba(140,140,170,0.5);
+      --surface:           rgba(18,18,38,0.55);
+      --surface-raised:    rgba(28,28,52,0.6);
+      --border-solid:      rgba(255,255,255,0.1);
+      --border:            rgba(255,255,255,0.06);
+      --bg:                transparent;
     }
 
     /* ─── DASHBOARD GRID ─── */
@@ -133,16 +152,19 @@
       gap: 12px;
     }
 
-    /* ─── HEADER ─── */
+    /* ─── HEADER — glass ─── */
     .header {
       display: flex;
       align-items: center;
       gap: 24px;
       padding: 12px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border-solid);
+      background: var(--glass-bg-header);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-top-color: var(--glass-border-top);
       border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--glass-shadow);
     }
 
     .header-brand {
@@ -208,7 +230,7 @@
     .progress-track {
       flex: 1;
       height: 4px;
-      background: var(--gainsboro-100);
+      background: rgba(255,255,255,0.12);
       border-radius: 2px;
       position: relative;
       overflow: visible;
@@ -256,12 +278,12 @@
     .day-counter {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
-      color: var(--text-muted);
+      color: rgba(160,160,200,0.8);
       letter-spacing: 0.02em;
     }
 
     .day-counter strong {
-      color: var(--text);
+      color: #e8e8f0;
       font-weight: 600;
     }
 
@@ -404,10 +426,14 @@
       align-items: center;
       gap: 0;
       background: var(--surface);
-      border: 1px solid var(--border-solid);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-top-color: var(--glass-border-top);
       border-radius: var(--radius);
       padding: 16px 24px;
       margin-bottom: 20px;
+      box-shadow: var(--glass-shadow);
     }
     .tl-stat { flex: 1; text-align: center; }
     .tl-stat-val {
@@ -444,7 +470,7 @@
     .tl-progress-pct { color: var(--accent); }
     .tl-progress-track {
       height: 6px;
-      background: var(--whitesmoke-400);
+      background: rgba(255, 255, 255, 0.12);
       border-radius: 99px;
       overflow: visible;
       position: relative;
@@ -470,10 +496,14 @@
     /* Calendar grid */
     .tl-calendar {
       background: var(--surface);
-      border: 1px solid var(--border-solid);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-top-color: var(--glass-border-top);
       border-radius: var(--radius);
       overflow: hidden;
       margin-bottom: 12px;
+      box-shadow: var(--glass-shadow);
     }
     .tl-cal-header {
       display: grid;
@@ -521,7 +551,7 @@
     /* Cell states */
     .tl-outside .tl-cal-date { color: var(--text-dim); }
     .tl-outside .tl-cal-challenge-day { display: none; }
-    .tl-outside { background: var(--whitesmoke-300); }
+    .tl-outside { background: rgba(0, 0, 0, 0.25); }
 
     .tl-in-challenge { background: rgba(69,53,204,0.025); }
 
@@ -774,13 +804,16 @@
     /* ─── PANELS (shared) ─── */
     .panel {
       background: var(--surface);
-      border: 1px solid var(--border-solid);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-top-color: var(--glass-border-top);
       border-radius: var(--radius);
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--glass-shadow);
     }
 
     .panel::before {
@@ -828,8 +861,8 @@
     }
 
     .departure-item:hover {
-      background: var(--whitesmoke-700);
-      border-color: var(--gainsboro-100);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.08);
     }
 
     .departure-dot {
@@ -869,7 +902,7 @@
     .departure-bar-track {
       width: 100%;
       height: 3px;
-      background: var(--whitesmoke-400);
+      background: rgba(255, 255, 255, 0.12);
       border-radius: 2px;
       margin-top: 8px;
     }
@@ -1081,7 +1114,7 @@
     .goal-bar-track {
       width: 100%;
       height: 6px;
-      background: var(--whitesmoke-400);
+      background: rgba(255, 255, 255, 0.12);
       border-radius: 3px;
     }
 
@@ -1120,12 +1153,15 @@
     /* ─── FOOTER / CALENDAR ─── */
     .footer {
       background: var(--surface);
-      border: 1px solid var(--border-solid);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-top-color: var(--glass-border-top);
       border-radius: var(--radius);
       padding: 16px 24px;
       position: relative;
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--glass-shadow);
     }
 
     .footer::before {
@@ -1207,7 +1243,7 @@
     }
 
     .calendar-bar.zero {
-      background: var(--whitesmoke-400);
+      background: rgba(255, 255, 255, 0.15);
       height: 2px !important;
     }
 
@@ -2308,7 +2344,7 @@
   <!-- ═══ LEADS PANEL ═══ -->
   <div id="timelinePanel"></div>
 
-  <div class="panel fade-in" id="leadsPanel" style="display: none; padding: 20px; max-width: 1400px; margin: 16px auto; min-height: 480px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-solid); border-radius: var(--radius); background: var(--surface);">
+  <div class="panel fade-in" id="leadsPanel" style="display: none; padding: 20px; max-width: 1400px; margin: 16px auto; min-height: 480px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-solid); padding-bottom: 12px;">
       <h2 style="font-size: 14px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">Leads Directory</h2>
       <button onclick="openLeadModal()" style="background: var(--accent); color: white; border: none; border-radius: var(--radius-xs); padding: 8px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s;">+ Add Lead</button>
