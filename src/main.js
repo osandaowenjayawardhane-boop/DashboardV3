@@ -18,6 +18,9 @@ function updateClock() {
 
 // ─── INITIALIZATION ───
 document.addEventListener('DOMContentLoaded', () => {
+  // Load background
+  initBackground();
+
   // Load configuration and bootstrap supabase
   const client = loadDatabaseConfig();
   if (client) {
@@ -111,6 +114,100 @@ export function switchViewTab(tabName) {
   }
 }
 
+// ─── BACKGROUND WALLPAPER CONFIGURATION ───
+export function applyBackground(urlStr) {
+  document.body.style.background = `linear-gradient(rgba(5, 5, 18, 0.60), rgba(5, 5, 18, 0.60)), url('${urlStr}') center center / cover no-repeat fixed`;
+}
+
+export function initBackground() {
+  const preset = localStorage.getItem('dashboard_bg_preset') || 'default';
+  const custom = localStorage.getItem('dashboard_bg_custom');
+
+  if (custom) {
+    applyBackground(custom);
+  } else if (preset === 'user') {
+    applyBackground('/bg-user.jpg');
+  } else {
+    applyBackground('/bg-default.jpg');
+  }
+}
+
+export function openSettingsModal() {
+  const modal = document.getElementById('settingsModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+export function closeSettingsModal() {
+  const modal = document.getElementById('settingsModal');
+  if (modal) modal.style.display = 'none';
+}
+
+export function setBackgroundPreset(preset) {
+  localStorage.setItem('dashboard_bg_preset', preset);
+  localStorage.removeItem('dashboard_bg_custom');
+  initBackground();
+  showError(`Background set to ${preset === 'user' ? 'Personal Selfie' : 'Abstract Hex'}.`, "success");
+}
+
+export function removeCustomBackground() {
+  localStorage.setItem('dashboard_bg_preset', 'default');
+  localStorage.removeItem('dashboard_bg_custom');
+  initBackground();
+  showError("Background reset to default.", "success");
+}
+
+export function handleBackgroundUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 5 * 1024 * 1024) {
+    showError("Image file must be under 5MB.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      // Compress & resize image to ensure it fits LocalStorage safely
+      const maxDim = 1280;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // 0.75 quality JPEG produces high quality but compact base64 (~80kb)
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+      
+      try {
+        localStorage.setItem('dashboard_bg_custom', compressedDataUrl);
+        localStorage.setItem('dashboard_bg_preset', 'custom');
+        initBackground();
+        showError("Custom background updated successfully.", "success");
+      } catch (err) {
+        console.error(err);
+        showError("Failed to save image locally. Try a smaller image.");
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 // Bind HTML events to module handlers
 window.toggleSetupPanel = toggleSetupPanel;
 window.saveDatabaseConfig = handleDatabaseSetupSave;
@@ -119,3 +216,11 @@ window.handleLogout = handleLogout;
 window.handleAuth = (event) => handleAuth(event, () => {});
 window.switchViewTab = switchViewTab;
 window.toggleDashboardSound = toggleDashboardSound;
+
+// Bind background configuration handlers
+window.initBackground = initBackground;
+window.openSettingsModal = openSettingsModal;
+window.closeSettingsModal = closeSettingsModal;
+window.setBackgroundPreset = setBackgroundPreset;
+window.removeCustomBackground = removeCustomBackground;
+window.handleBackgroundUpload = handleBackgroundUpload;

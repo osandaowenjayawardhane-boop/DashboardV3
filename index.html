@@ -2118,6 +2118,7 @@
           <span id="missionTimerDisplay">--:--:--</span>
         </div>
         <button class="sound-toggle-btn" id="soundToggleBtn" onclick="toggleDashboardSound()" title="Mute sound" style="background: none; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); padding: 4px; font-size: 10px; cursor: pointer; color: var(--text-secondary); margin-right: 6px; display: inline-flex; align-items: center; justify-content: center; height: 21px; width: 21px; transition: all 0.2s;">🔊</button>
+        <button onclick="openSettingsModal()" style="background: none; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); padding: 4px 8px; font-size: 10px; font-weight: 600; color: var(--text-secondary); cursor: pointer; margin-right: 6px; transition: all 0.2s; height: 21px; display: inline-flex; align-items: center;">⚙ Settings</button>
         <button class="logout-button" onclick="handleLogout()">Sign Out</button>
       </div>
     </header>
@@ -2481,6 +2482,40 @@
       </form>
     </div>
   </div>
+  <!-- Settings Modal -->
+  <div id="settingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: var(--surface); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-top-color: var(--glass-border-top); border-radius: var(--radius); padding: 24px; box-shadow: var(--glass-shadow); width: 380px; max-height: 90vh; overflow-y: auto; animation: fadeSlideUp 0.3s ease-out;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-solid); padding-bottom: 10px;">
+        <h3 style="font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-primary); margin: 0;">Dashboard Settings</h3>
+        <button onclick="closeSettingsModal()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: var(--text-muted); font-weight: bold; line-height: 1;">&times;</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Background Options -->
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h4 style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary);">Custom Wallpaper</h4>
+          <span style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">Upload a new image to personalize your backdrop, or choose one of the preset options.</span>
+        </div>
+
+        <!-- Presets Row -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+          <button onclick="setBackgroundPreset('default')" style="flex: 1; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); background: rgba(255,255,255,0.05); color: var(--text); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">Abstract Hex</button>
+          <button onclick="setBackgroundPreset('user')" style="flex: 1; padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); background: rgba(255,255,255,0.05); color: var(--text); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;">Personal Selfie</button>
+        </div>
+
+        <!-- File Upload Dropzone -->
+        <div style="position: relative; border: 2px dashed var(--border-solid); border-radius: var(--radius-sm); padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(0,0,0,0.2);" id="bgDropzone" onclick="document.getElementById('bgFileInput').click()">
+          <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 4px;">📂 Click to upload image</span>
+          <span style="font-size: 9px; color: var(--text-dim);">Supports JPG, PNG (Max 5MB)</span>
+          <input type="file" id="bgFileInput" accept="image/*" style="display: none;" onchange="handleBackgroundUpload(event)">
+        </div>
+
+        <!-- Reset Button -->
+        <button onclick="removeCustomBackground()" style="padding: 10px; border: 1px solid rgba(220, 38, 38, 0.25); border-radius: var(--radius-xs); background: rgba(220, 38, 38, 0.08); color: #ef4444; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px;">Reset to Default</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
