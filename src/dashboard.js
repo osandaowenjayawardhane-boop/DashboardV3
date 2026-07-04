@@ -278,21 +278,10 @@ export async function fetchAndRenderDashboard() {
     const grindDealPrice = document.getElementById('grindDealPrice');
     if (grindDealPrice) grindDealPrice.textContent = `Item: $${dealPriceSetting.toLocaleString()}`;
 
-    // Calculate close rate from leads database
-    let totalBooked = 0;
-    let totalClosed = 0;
-    if (leads) {
-      leads.forEach(l => {
-        if (l.pipeline_stage === 'Booked' || l.pipeline_stage === 'Showed' || l.pipeline_stage === 'Closed Won') {
-          totalBooked++;
-        }
-        if (l.pipeline_stage === 'Closed Won') {
-          totalClosed++;
-        }
-      });
-    }
-    const closeRate = (totalBooked > 0 && totalClosed > 0) ? (totalClosed / totalBooked) : 0.20;
-    const closeRatePct = (closeRate * 100).toFixed(0);
+    // Calculate close rate from manual settings
+    const closeRateSetting = parseFloat(localStorage.getItem('dashboard_close_rate')) || 20;
+    const closeRate = closeRateSetting / 100;
+    const closeRatePct = closeRateSetting.toFixed(0);
 
     // Calculate remaining deals needed
     const remainingRev = Math.max(goal - totalRevenue, 0);

@@ -212,10 +212,12 @@ export function handleBackgroundUpload(event) {
 export function saveRewardSettings() {
   const name = document.getElementById('rewardNameInput')?.value || "Tokyo Vacation";
   const price = parseFloat(document.getElementById('dealPriceInput')?.value) || 1500;
+  const closeRate = parseFloat(document.getElementById('closeRateInput')?.value) || 20;
   const image = document.getElementById('rewardImageInput')?.value || "";
 
   localStorage.setItem('dashboard_reward_name', name);
   localStorage.setItem('dashboard_deal_price', price.toString());
+  localStorage.setItem('dashboard_close_rate', closeRate.toString());
   localStorage.setItem('dashboard_reward_image', image);
 
   // Trigger update to refresh display
@@ -229,10 +231,12 @@ export function saveRewardSettings() {
 export function initRewardSettings() {
   const name = localStorage.getItem('dashboard_reward_name') || "Tokyo Vacation";
   const price = localStorage.getItem('dashboard_deal_price') || "1500";
+  const closeRate = localStorage.getItem('dashboard_close_rate') || "20";
   const image = localStorage.getItem('dashboard_reward_image') || "";
 
   if (document.getElementById('rewardNameInput')) document.getElementById('rewardNameInput').value = name;
   if (document.getElementById('dealPriceInput')) document.getElementById('dealPriceInput').value = price;
+  if (document.getElementById('closeRateInput')) document.getElementById('closeRateInput').value = closeRate;
   if (document.getElementById('rewardImageInput')) document.getElementById('rewardImageInput').value = image;
 }
 
