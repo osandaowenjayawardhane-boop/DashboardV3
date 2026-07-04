@@ -2199,110 +2199,79 @@
     <main class="main" id="mainScoreboard">
 
       <!-- ─── DEPARTURES ─── -->
-      <!-- Left Column Stacking -->
-      <div style="display: flex; flex-direction: column; gap: 12px; min-height: 0;">
-        <!-- ─── DEPARTURES ─── -->
-        <div class="panel fade-in fade-in-d1" id="departuresPanel" style="flex: 0 0 auto;">
-          <div class="panel-header">
-            <div class="panel-label">Departures · Today</div>
-          </div>
-          <div class="panel-body">
-            <div class="departure-group">
-              <div class="departure-item">
-                <div class="departure-dot purple"></div>
-                <div class="departure-info">
-                  <div class="departure-name">Cold Calls</div>
-                  <div class="departure-target">Goal: 50</div>
-                </div>
-                <div class="departure-count" id="depCallsCount">0</div>
-              </div>
-              <div class="departure-bar-track">
-                <div class="departure-bar-fill purple" id="depCallsBar" style="width: 0%"></div>
-              </div>
-            </div>
-
-            <div class="departure-group">
-              <div class="departure-item">
-                <div class="departure-dot coral"></div>
-                <div class="departure-info">
-                  <div class="departure-name">Cold DMs</div>
-                  <div class="departure-target">Goal: 100</div>
-                </div>
-                <div class="departure-count" id="depDmsCount">0</div>
-              </div>
-              <div class="departure-bar-track">
-                <div class="departure-bar-fill coral" id="depDmsBar" style="width: 0%"></div>
-              </div>
-            </div>
-
-            <div class="departure-group">
-              <div class="departure-item">
-                <div class="departure-dot neutral"></div>
-                <div class="departure-info">
-                  <div class="departure-name">Follow-ups</div>
-                  <div class="departure-target">Goal: 30</div>
-                </div>
-                <div class="departure-count" id="depFollowupsCount">0</div>
-              </div>
-              <div class="departure-bar-track">
-                <div class="departure-bar-fill neutral" id="depFollowupsBar" style="width: 0%"></div>
-              </div>
-            </div>
-
-            <div class="departure-group">
-              <div class="departure-item">
-                <div class="departure-dot neutral"></div>
-                <div class="departure-info">
-                  <div class="departure-name">Content Posted</div>
-                  <div class="departure-target">Goal: 5</div>
-                </div>
-                <div class="departure-count" id="depContentCount">0</div>
-              </div>
-              <div class="departure-bar-track">
-                <div class="departure-bar-fill neutral" id="depContentBar" style="width: 0%"></div>
-              </div>
-            </div>
-
-            <div class="departures-total">
-              <span class="departures-total-label">Total Actions</span>
-              <span class="departures-total-count" id="depTotalCount">0</span>
-            </div>
-          </div>
+      <!-- ─── DEPARTURES ─── -->
+      <div class="panel fade-in fade-in-d1" id="departuresPanel">
+        <div class="panel-header">
+          <div class="panel-label">Departures · Today</div>
         </div>
-
-        <!-- ─── VISION & GRIND HUB ─── -->
-        <div class="panel fade-in fade-in-d1" id="visionPanel" style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px;">
-          <div class="panel-header">
-            <div class="panel-label">Vision & Grind Hub</div>
+        <div class="panel-body">
+          <div class="departure-group">
+            <div class="departure-item">
+              <div class="departure-dot purple"></div>
+              <div class="departure-info">
+                <div class="departure-name">Cold Calls</div>
+                <div class="departure-target">Goal: 50</div>
+              </div>
+              <div class="departure-count" id="depCallsCount">0</div>
+            </div>
+            <div class="departure-bar-track">
+              <div class="departure-bar-fill purple" id="depCallsBar" style="width: 0%"></div>
+            </div>
           </div>
-          <div class="panel-body" style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: space-between; padding-top: 4px;">
-            <!-- Goal Reward Card -->
-            <div style="position: relative; border-radius: var(--radius-sm); overflow: hidden; height: 110px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-solid);">
-              <img id="rewardImageDisplay" src="" style="width: 100%; height: 100%; object-fit: cover; transition: all 1s ease; filter: grayscale(1) blur(10px) brightness(0.4);" />
-              <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 8px; text-align: center;">
-                <span id="rewardNameDisplay" style="font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em;">Rolex Watch</span>
+
+          <div class="departure-group">
+            <div class="departure-item">
+              <div class="departure-dot coral"></div>
+              <div class="departure-info">
+                <div class="departure-name">Cold DMs</div>
+                <div class="departure-target">Goal: 100</div>
               </div>
+              <div class="departure-count" id="depDmsCount">0</div>
             </div>
-            
-            <!-- Grind Metrics -->
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-              <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); border-bottom: 1px solid var(--border-solid); padding-bottom: 4px; display: flex; justify-content: space-between;">
-                <span>Grind Metrics</span>
-                <span id="grindDealPrice" style="color: var(--accent);">Item: $1,500</span>
-              </div>
-              <div id="grindDealsText" style="font-size: 11px; font-weight: 600; line-height: 1.4; color: var(--text-primary);">
-                Loading next targets...
-              </div>
-              <div id="grindCallsText" style="font-size: 10px; font-weight: 500; line-height: 1.4; color: var(--text-secondary); opacity: 0.85;">
-                Syncing close rates...
-              </div>
+            <div class="departure-bar-track">
+              <div class="departure-bar-fill coral" id="depDmsBar" style="width: 0%"></div>
             </div>
+          </div>
+
+          <div class="departure-group">
+            <div class="departure-item">
+              <div class="departure-dot neutral"></div>
+              <div class="departure-info">
+                <div class="departure-name">Follow-ups</div>
+                <div class="departure-target">Goal: 30</div>
+              </div>
+              <div class="departure-count" id="depFollowupsCount">0</div>
+            </div>
+            <div class="departure-bar-track">
+              <div class="departure-bar-fill neutral" id="depFollowupsBar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="departure-group">
+            <div class="departure-item">
+              <div class="departure-dot neutral"></div>
+              <div class="departure-info">
+                <div class="departure-name">Content Posted</div>
+                <div class="departure-target">Goal: 5</div>
+              </div>
+              <div class="departure-count" id="depContentCount">0</div>
+            </div>
+            <div class="departure-bar-track">
+              <div class="departure-bar-fill neutral" id="depContentBar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="departures-total">
+            <span class="departures-total-label">Total Actions</span>
+            <span class="departures-total-count" id="depTotalCount">0</span>
           </div>
         </div>
       </div>
 
-      <!-- ─── TRANSIT MAP ─── -->
-      <div class="transit-section fade-in fade-in-d2">
+      <!-- Middle Column Stacking -->
+      <div style="display: flex; flex-direction: column; gap: 12px; min-height: 0;">
+        <!-- ─── TRANSIT MAP ─── -->
+        <div class="transit-section fade-in fade-in-d2" style="flex: 0 0 auto; height: 320px;">
         <div class="transit-header">
           <div class="transit-title">Pipeline Network</div>
           <div class="transit-legend">
@@ -2446,7 +2415,65 @@
         </div>
       </div>
 
-      <!-- ─── REVENUE TERMINAL ─── -->
+      <!-- ─── TABBED CONSOLE PANEL ─── -->
+      <div class="panel fade-in fade-in-d2" id="consolePanel" style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 180px; gap: 0; overflow: hidden;">
+        <!-- Tabs Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-solid); padding: 8px 16px; background: rgba(0,0,0,0.15); flex-shrink: 0;">
+          <div style="display: flex; gap: 16px;">
+            <button id="consoleTabVision" onclick="switchConsoleTab('vision')" style="background: none; border: none; font-family: inherit; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-primary); cursor: pointer; border-bottom: 2px solid var(--accent); padding: 4px 0; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">🎯 Vision Board</button>
+            <button id="consoleTabActivity" onclick="switchConsoleTab('activity')" style="background: none; border: none; font-family: inherit; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; padding: 4px 0; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">📋 Recent Activity</button>
+          </div>
+          <div style="font-size: 9px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;" id="consoleStatusText">Goal Progress Monitor</div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 12px; min-height: 0; justify-content: center;">
+          <!-- Tab 1: Vision Board -->
+          <div id="consoleContentVision" style="display: flex; gap: 20px; width: 100%; height: 100%; align-items: center;">
+            <!-- Left Side: Goal Image -->
+            <div style="position: relative; border-radius: var(--radius-sm); overflow: hidden; width: 150px; height: 95px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-solid); flex-shrink: 0;">
+              <img id="rewardImageDisplay" src="" style="width: 100%; height: 100%; object-fit: cover; transition: all 1s ease; filter: grayscale(1) blur(10px) brightness(0.4);" />
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 6px; text-align: center;">
+                <span id="rewardNameDisplay" style="font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em;">Rolex Watch</span>
+              </div>
+            </div>
+            
+            <!-- Right Side: Grind Stats -->
+            <div style="display: flex; flex-direction: column; gap: 6px; flex: 1; justify-content: center;">
+              <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); border-bottom: 1px solid var(--border-solid); padding-bottom: 4px; display: flex; justify-content: space-between;">
+                <span>Current Vision Status</span>
+                <span id="grindDealPrice" style="color: var(--accent);">Item: $1,500</span>
+              </div>
+              <div id="grindDealsText" style="font-size: 11px; font-weight: 600; line-height: 1.4; color: var(--text-primary);">
+                Loading target data...
+              </div>
+              <div id="grindCallsText" style="font-size: 10px; font-weight: 500; line-height: 1.4; color: var(--text-secondary); opacity: 0.85;">
+                Syncing close rates...
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Recent Activity -->
+          <div id="consoleContentActivity" style="display: none; width: 100%; height: 100%; flex-direction: column; overflow-y: auto; min-height: 0;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 11px;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-solid); height: 24px;">
+                  <th style="padding: 4px 6px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em;">Name</th>
+                  <th style="padding: 4px 6px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em;">Source</th>
+                  <th style="padding: 4px 6px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em;">Current Stage</th>
+                  <th style="padding: 4px 6px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em; text-align: right;">Added</th>
+                </tr>
+              </thead>
+              <tbody id="consoleActivityBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── REVENUE TERMINAL ─── -->
       <div class="panel fade-in fade-in-d3" id="terminalPanel">
         <div class="panel-header">
           <div class="panel-label">Revenue Terminal</div>

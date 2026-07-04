@@ -236,6 +236,34 @@ export function initRewardSettings() {
   if (document.getElementById('rewardImageInput')) document.getElementById('rewardImageInput').value = image;
 }
 
+export function switchConsoleTab(tab) {
+  const tabVision = document.getElementById('consoleTabVision');
+  const tabActivity = document.getElementById('consoleTabActivity');
+  const contentVision = document.getElementById('consoleContentVision');
+  const contentActivity = document.getElementById('consoleContentActivity');
+  const statusText = document.getElementById('consoleStatusText');
+
+  if (!tabVision || !tabActivity || !contentVision || !contentActivity) return;
+
+  if (tab === 'vision') {
+    tabVision.style.color = 'var(--text-primary)';
+    tabVision.style.borderBottomColor = 'var(--accent)';
+    tabActivity.style.color = 'var(--text-muted)';
+    tabActivity.style.borderBottomColor = 'transparent';
+    contentVision.style.display = 'flex';
+    contentActivity.style.display = 'none';
+    if (statusText) statusText.textContent = "Goal Progress Monitor";
+  } else {
+    tabVision.style.color = 'var(--text-muted)';
+    tabVision.style.borderBottomColor = 'transparent';
+    tabActivity.style.color = 'var(--text-primary)';
+    tabActivity.style.borderBottomColor = 'var(--accent)';
+    contentVision.style.display = 'none';
+    contentActivity.style.display = 'flex';
+    if (statusText) statusText.textContent = "Real-time Lead Activity";
+  }
+}
+
 // Bind HTML events to module handlers
 window.toggleSetupPanel = toggleSetupPanel;
 window.saveDatabaseConfig = handleDatabaseSetupSave;
@@ -256,3 +284,6 @@ window.handleBackgroundUpload = handleBackgroundUpload;
 // Bind reward configuration handlers
 window.saveRewardSettings = saveRewardSettings;
 window.initRewardSettings = initRewardSettings;
+
+// Bind console tab switching
+window.switchConsoleTab = switchConsoleTab;
