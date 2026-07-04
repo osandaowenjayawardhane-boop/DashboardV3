@@ -251,16 +251,22 @@ serve(async (req) => {
       }
     }
 
-    let pipelineStage = stageParam || mapGhlStage(stageName, status, source);
+    // Map the source (cold_call vs cold_dm), checking URL parameter override first
+    let finalSource = url.searchParams.get("source") as "cold_call" | "cold_dm" | null;
+    if (!finalSource || (finalSource !== "cold_call" && finalSource !== "cold_dm")) {
+      finalSource = source;
+    }
 
-    console.log(`GHL Webhook | upserting lead: externalId="${externalId}" stage="${pipelineStage}" (source: ${url.searchParams.get("stage") ? "URL param" : "Payload mapping"}) name="${name}" source="${source}"`);
+    let pipelineStage = stageParam || mapGhlStage(stageName, status, finalSource);
+
+    console.log(`GHL Webhook | upserting lead: externalId="${externalId}" stage="${pipelineStage}" (source: ${url.searchParams.get("stage") ? "URL param" : "Payload mapping"}) name="${name}" source="${finalSource}"`);
 
     await service.upsertLead(userId, challengeId, {
       name:           name ?? undefined,
       phone:          phone ?? undefined,
       email:          email ?? undefined,
       company:        company ?? undefined,
-      source,
+      source:         finalSource,
       pipeline_stage: pipelineStage,
       external_id:    externalId ?? undefined,
     });
