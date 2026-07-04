@@ -297,18 +297,16 @@ export async function fetchAndRenderDashboard() {
     // Calculate remaining deals needed
     const remainingRev = Math.max(goal - totalRevenue, 0);
     const grindDealsText = document.getElementById('grindDealsText');
-    const grindCallsText = document.getElementById('grindCallsText');
 
-    if (grindDealsText && grindCallsText) {
+    if (grindDealsText) {
       if (remainingRev <= 0) {
-        grindDealsText.innerHTML = `🎉 <span style="color: #10b981;">Goal Unlocked!</span> Enjoy your <strong style="color: var(--accent); font-weight:700;">${rewardName}</strong>!`;
-        grindCallsText.textContent = "You've successfully conquered the challenge!";
+        grindDealsText.innerHTML = `🎉 <span style="color: #10b981; font-weight: 700;">Goal Unlocked!</span> Enjoy your <strong style="color: var(--accent); font-family: 'Cinzel', serif; font-weight: 700;">${rewardName}</strong>! You've successfully conquered the challenge.`;
       } else {
         const dealsNeeded = Math.ceil(remainingRev / dealPriceSetting);
         const bookedNeeded = Math.ceil(dealsNeeded / closeRate);
+        const dealPriceFormatted = dealPriceSetting.toLocaleString();
         
-        grindDealsText.innerHTML = `You need <strong style="color: var(--accent); font-weight:700;">${dealsNeeded}</strong> more Closed Won deals to buy your <strong>${rewardName}</strong>!`;
-        grindCallsText.innerHTML = `Based on your <strong style="color: var(--accent);">${closeRatePct}%</strong> close rate, you need to book <strong style="color: var(--accent); font-weight:700;">${bookedNeeded}</strong> Calls to get those deals.`;
+        grindDealsText.innerHTML = `You are <strong style="color: var(--accent); font-weight: 700;">${dealsNeeded} Closed Won deals</strong> (at $${dealPriceFormatted} each) away from unlocking your <strong style="color: var(--accent); font-family: 'Cinzel', serif; font-weight: 700;">${rewardName}</strong>. Based on your <strong style="color: var(--accent); font-weight: 700;">${closeRatePct}% closing rate</strong>, you need to book <strong style="color: var(--accent); font-weight: 700;">${bookedNeeded} meetings</strong> to secure them.`;
       }
     }
 
