@@ -89,14 +89,14 @@ function extractPayloadData(p: Rec) {
     null;
 
   // ── Contact info ─────────────────────────────────────────────────────────
-  const firstName  = str(p.firstName)  || str(contact.firstName)  || "";
-  const lastName   = str(p.lastName)   || str(contact.lastName)   || "";
-  const fullName   = str(p.name)       || str(contact.name)       || str(opp.contactName) ||
+  const firstName  = str(p.firstName)  || str(p.first_name)  || str(contact.firstName)  || "";
+  const lastName   = str(p.lastName)   || str(p.last_name)   || str(contact.lastName)   || "";
+  const fullName   = str(p.name)       || str(contact.name)  || str(p.full_name)        || str(opp.contactName) ||
                      [firstName, lastName].filter(Boolean).join(" ") || null;
 
-  const phone    = str(p.phone)        || str(contact.phone)      || str(p.phoneRaw)  || null;
+  const phone    = str(p.phone)        || str(p.phone_number)     || str(contact.phone) || str(p.phoneRaw) || null;
   const email    = str(p.email)        || str(contact.email)      || null;
-  const company  = str(p.companyName)  || str(contact.companyName)|| str(p.company)   || null;
+  const company  = str(p.companyName)  || str(p.company_name)     || str(contact.companyName) || str(p.company) || null;
 
   // ── Source: default to cold_call unless tagged otherwise ─────────────────
   // Normalize tags — GHL sends "" (empty string), a CSV string, or a real array
