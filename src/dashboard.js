@@ -249,6 +249,68 @@ export async function fetchAndRenderDashboard() {
       });
     }
 
+    // ─── 5. Grind Metrics & Reward Visualizer updates ───
+    const rewardName = localStorage.getItem('dashboard_reward_name') || "Tokyo Vacation";
+    const dealPriceSetting = parseFloat(localStorage.getItem('dashboard_deal_price')) || 1500;
+    const rewardImage = localStorage.getItem('dashboard_reward_image') || "";
+
+    // Set reward name display
+    const rewardNameDisplay = document.getElementById('rewardNameDisplay');
+    if (rewardNameDisplay) rewardNameDisplay.textContent = rewardName;
+
+    // Set reward image URL and blur filter based on progress ratio
+    const rewardImageDisplay = document.getElementById('rewardImageDisplay');
+    if (rewardImageDisplay) {
+      // Use fallback default watch picture if they didn't set a URL
+      const fallbackUrl = "https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=cover&q=80&w=600";
+      rewardImageDisplay.src = rewardImage || fallbackUrl;
+      
+      const ratio = Math.min(totalRevenue / goal, 1);
+      // Blur goes from 10px down to 0px, Grayscale from 100% (1) down to 0%, Brightness from 40% (0.4) up to 100% (1)
+      const blurVal = (1 - ratio) * 10;
+      const grayVal = (1 - ratio);
+      const brightVal = 0.4 + (ratio * 0.6);
+      rewardImageDisplay.style.filter = `grayscale(${grayVal}) blur(${blurVal}px) brightness(${brightVal})`;
+    }
+
+    // Set average deal price subheader
+    const grindDealPrice = document.getElementById('grindDealPrice');
+    if (grindDealPrice) grindDealPrice.textContent = `Item: $${dealPriceSetting.toLocaleString()}`;
+
+    // Calculate close rate from leads database
+    let totalBooked = 0;
+    let totalClosed = 0;
+    if (leads) {
+      leads.forEach(l => {
+        if (l.pipeline_stage === 'Booked' || l.pipeline_stage === 'Showed' || l.pipeline_stage === 'Closed Won') {
+          totalBooked++;
+        }
+        if (l.pipeline_stage === 'Closed Won') {
+          totalClosed++;
+        }
+      });
+    }
+    const closeRate = (totalBooked > 0 && totalClosed > 0) ? (totalClosed / totalBooked) : 0.20;
+    const closeRatePct = (closeRate * 100).toFixed(0);
+
+    // Calculate remaining deals needed
+    const remainingRev = Math.max(goal - totalRevenue, 0);
+    const grindDealsText = document.getElementById('grindDealsText');
+    const grindCallsText = document.getElementById('grindCallsText');
+
+    if (grindDealsText && grindCallsText) {
+      if (remainingRev <= 0) {
+        grindDealsText.innerHTML = `🎉 <span style="color: #10b981;">Goal Unlocked!</span> Enjoy your <strong style="color: var(--accent); font-weight:700;">${rewardName}</strong>!`;
+        grindCallsText.textContent = "You've successfully conquered the challenge!";
+      } else {
+        const dealsNeeded = Math.ceil(remainingRev / dealPriceSetting);
+        const bookedNeeded = Math.ceil(dealsNeeded / closeRate);
+        
+        grindDealsText.innerHTML = `You need <strong style="color: var(--accent); font-weight:700;">${dealsNeeded}</strong> more Closed Won deals to buy your <strong>${rewardName}</strong>!`;
+        grindCallsText.innerHTML = `Based on your <strong style="color: var(--accent);">${closeRatePct}%</strong> close rate, you need to book <strong style="color: var(--accent); font-weight:700;">${bookedNeeded}</strong> Calls to get those deals.`;
+      }
+    }
+
     renderHistoryGrid(dailyAmounts, currentChallengeDay);
 
   } catch (err) {
@@ -383,3 +445,6 @@ export function animateValue(el, start, end, duration, prefix = '', suffix = '')
   };
   requestAnimationFrame(update);
 }
+
+// Bind live update function globally
+window.updateDashboardData = fetchAndRenderDashboard;

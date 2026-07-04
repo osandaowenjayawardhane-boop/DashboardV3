@@ -2199,70 +2199,104 @@
     <main class="main" id="mainScoreboard">
 
       <!-- ─── DEPARTURES ─── -->
-      <div class="panel fade-in fade-in-d1" id="departuresPanel">
-        <div class="panel-header">
-          <div class="panel-label">Departures · Today</div>
+      <!-- Left Column Stacking -->
+      <div style="display: flex; flex-direction: column; gap: 12px; min-height: 0;">
+        <!-- ─── DEPARTURES ─── -->
+        <div class="panel fade-in fade-in-d1" id="departuresPanel" style="flex: 0 0 auto;">
+          <div class="panel-header">
+            <div class="panel-label">Departures · Today</div>
+          </div>
+          <div class="panel-body">
+            <div class="departure-group">
+              <div class="departure-item">
+                <div class="departure-dot purple"></div>
+                <div class="departure-info">
+                  <div class="departure-name">Cold Calls</div>
+                  <div class="departure-target">Goal: 50</div>
+                </div>
+                <div class="departure-count" id="depCallsCount">0</div>
+              </div>
+              <div class="departure-bar-track">
+                <div class="departure-bar-fill purple" id="depCallsBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="departure-group">
+              <div class="departure-item">
+                <div class="departure-dot coral"></div>
+                <div class="departure-info">
+                  <div class="departure-name">Cold DMs</div>
+                  <div class="departure-target">Goal: 100</div>
+                </div>
+                <div class="departure-count" id="depDmsCount">0</div>
+              </div>
+              <div class="departure-bar-track">
+                <div class="departure-bar-fill coral" id="depDmsBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="departure-group">
+              <div class="departure-item">
+                <div class="departure-dot neutral"></div>
+                <div class="departure-info">
+                  <div class="departure-name">Follow-ups</div>
+                  <div class="departure-target">Goal: 30</div>
+                </div>
+                <div class="departure-count" id="depFollowupsCount">0</div>
+              </div>
+              <div class="departure-bar-track">
+                <div class="departure-bar-fill neutral" id="depFollowupsBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="departure-group">
+              <div class="departure-item">
+                <div class="departure-dot neutral"></div>
+                <div class="departure-info">
+                  <div class="departure-name">Content Posted</div>
+                  <div class="departure-target">Goal: 5</div>
+                </div>
+                <div class="departure-count" id="depContentCount">0</div>
+              </div>
+              <div class="departure-bar-track">
+                <div class="departure-bar-fill neutral" id="depContentBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="departures-total">
+              <span class="departures-total-label">Total Actions</span>
+              <span class="departures-total-count" id="depTotalCount">0</span>
+            </div>
+          </div>
         </div>
-        <div class="panel-body">
-          <div class="departure-group">
-            <div class="departure-item">
-              <div class="departure-dot purple"></div>
-              <div class="departure-info">
-                <div class="departure-name">Cold Calls</div>
-                <div class="departure-target">Goal: 50</div>
-              </div>
-              <div class="departure-count" id="depCallsCount">0</div>
-            </div>
-            <div class="departure-bar-track">
-              <div class="departure-bar-fill purple" id="depCallsBar" style="width: 0%"></div>
-            </div>
-          </div>
 
-          <div class="departure-group">
-            <div class="departure-item">
-              <div class="departure-dot coral"></div>
-              <div class="departure-info">
-                <div class="departure-name">Cold DMs</div>
-                <div class="departure-target">Goal: 100</div>
-              </div>
-              <div class="departure-count" id="depDmsCount">0</div>
-            </div>
-            <div class="departure-bar-track">
-              <div class="departure-bar-fill coral" id="depDmsBar" style="width: 0%"></div>
-            </div>
+        <!-- ─── VISION & GRIND HUB ─── -->
+        <div class="panel fade-in fade-in-d1" id="visionPanel" style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px;">
+          <div class="panel-header">
+            <div class="panel-label">Vision & Grind Hub</div>
           </div>
-
-          <div class="departure-group">
-            <div class="departure-item">
-              <div class="departure-dot neutral"></div>
-              <div class="departure-info">
-                <div class="departure-name">Follow-ups</div>
-                <div class="departure-target">Goal: 30</div>
+          <div class="panel-body" style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: space-between; padding-top: 4px;">
+            <!-- Goal Reward Card -->
+            <div style="position: relative; border-radius: var(--radius-sm); overflow: hidden; height: 110px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-solid);">
+              <img id="rewardImageDisplay" src="" style="width: 100%; height: 100%; object-fit: cover; transition: all 1s ease; filter: grayscale(1) blur(10px) brightness(0.4);" />
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 8px; text-align: center;">
+                <span id="rewardNameDisplay" style="font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em;">Rolex Watch</span>
               </div>
-              <div class="departure-count" id="depFollowupsCount">0</div>
             </div>
-            <div class="departure-bar-track">
-              <div class="departure-bar-fill neutral" id="depFollowupsBar" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <div class="departure-group">
-            <div class="departure-item">
-              <div class="departure-dot neutral"></div>
-              <div class="departure-info">
-                <div class="departure-name">Content Posted</div>
-                <div class="departure-target">Goal: 5</div>
+            
+            <!-- Grind Metrics -->
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); border-bottom: 1px solid var(--border-solid); padding-bottom: 4px; display: flex; justify-content: space-between;">
+                <span>Grind Metrics</span>
+                <span id="grindDealPrice" style="color: var(--accent);">Item: $1,500</span>
               </div>
-              <div class="departure-count" id="depContentCount">0</div>
+              <div id="grindDealsText" style="font-size: 11px; font-weight: 600; line-height: 1.4; color: var(--text-primary);">
+                Loading next targets...
+              </div>
+              <div id="grindCallsText" style="font-size: 10px; font-weight: 500; line-height: 1.4; color: var(--text-secondary); opacity: 0.85;">
+                Syncing close rates...
+              </div>
             </div>
-            <div class="departure-bar-track">
-              <div class="departure-bar-fill neutral" id="depContentBar" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <div class="departures-total">
-            <span class="departures-total-label">Total Actions</span>
-            <span class="departures-total-count" id="depTotalCount">0</span>
           </div>
         </div>
       </div>
@@ -2590,6 +2624,34 @@
 
         <!-- Reset Button -->
         <button onclick="removeCustomBackground()" style="padding: 10px; border: 1px solid rgba(220, 38, 38, 0.25); border-radius: var(--radius-xs); background: rgba(220, 38, 38, 0.08); color: #ef4444; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px;">Reset to Default</button>
+
+        <!-- Divider -->
+        <hr style="border: 0; border-top: 1px solid var(--border-solid); margin: 12px 0;" />
+
+        <!-- Reward/Goal Settings -->
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <h4 style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary);">Goal Motivation Reward</h4>
+            <span style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">Configure what you are working to unlock.</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label for="rewardNameInput" style="font-size: 9px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Reward Name</label>
+            <input type="text" id="rewardNameInput" placeholder="Rolex Watch" style="padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 11px; background: rgba(0,0,0,0.2); color: var(--text-primary);" />
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label for="dealPriceInput" style="font-size: 9px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Your Average Selling Price ($)</label>
+            <input type="number" id="dealPriceInput" placeholder="1500" style="padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 11px; background: rgba(0,0,0,0.2); color: var(--text-primary);" />
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label for="rewardImageInput" style="font-size: 9px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Reward Image URL (Optional)</label>
+            <input type="text" id="rewardImageInput" placeholder="https://example.com/watch.jpg" style="padding: 8px; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); font-family: inherit; font-size: 11px; background: rgba(0,0,0,0.2); color: var(--text-primary);" />
+          </div>
+
+          <button onclick="saveRewardSettings()" style="padding: 10px; border: none; border-radius: var(--radius-xs); background: var(--accent); color: #121220; font-size: 10px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; transition: all 0.2s;">Save Reward Settings</button>
+        </div>
       </div>
     </div>
   </div>

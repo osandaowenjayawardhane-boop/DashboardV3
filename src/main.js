@@ -135,6 +135,7 @@ export function initBackground() {
 export function openSettingsModal() {
   const modal = document.getElementById('settingsModal');
   if (modal) modal.style.display = 'flex';
+  initRewardSettings();
 }
 
 export function closeSettingsModal() {
@@ -208,6 +209,33 @@ export function handleBackgroundUpload(event) {
   reader.readAsDataURL(file);
 }
 
+export function saveRewardSettings() {
+  const name = document.getElementById('rewardNameInput')?.value || "Tokyo Vacation";
+  const price = parseFloat(document.getElementById('dealPriceInput')?.value) || 1500;
+  const image = document.getElementById('rewardImageInput')?.value || "";
+
+  localStorage.setItem('dashboard_reward_name', name);
+  localStorage.setItem('dashboard_deal_price', price.toString());
+  localStorage.setItem('dashboard_reward_image', image);
+
+  // Trigger update to refresh display
+  if (window.updateDashboardData) {
+    window.updateDashboardData();
+  }
+  closeSettingsModal();
+  showError("Reward settings saved successfully.", "success");
+}
+
+export function initRewardSettings() {
+  const name = localStorage.getItem('dashboard_reward_name') || "Tokyo Vacation";
+  const price = localStorage.getItem('dashboard_deal_price') || "1500";
+  const image = localStorage.getItem('dashboard_reward_image') || "";
+
+  if (document.getElementById('rewardNameInput')) document.getElementById('rewardNameInput').value = name;
+  if (document.getElementById('dealPriceInput')) document.getElementById('dealPriceInput').value = price;
+  if (document.getElementById('rewardImageInput')) document.getElementById('rewardImageInput').value = image;
+}
+
 // Bind HTML events to module handlers
 window.toggleSetupPanel = toggleSetupPanel;
 window.saveDatabaseConfig = handleDatabaseSetupSave;
@@ -224,3 +252,7 @@ window.closeSettingsModal = closeSettingsModal;
 window.setBackgroundPreset = setBackgroundPreset;
 window.removeCustomBackground = removeCustomBackground;
 window.handleBackgroundUpload = handleBackgroundUpload;
+
+// Bind reward configuration handlers
+window.saveRewardSettings = saveRewardSettings;
+window.initRewardSettings = initRewardSettings;
