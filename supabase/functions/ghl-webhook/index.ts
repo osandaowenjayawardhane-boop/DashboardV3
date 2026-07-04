@@ -227,7 +227,31 @@ serve(async (req) => {
       extractPayloadData(payload);
 
     // Map the stage name, checking first if it was passed explicitly in the URL query parameters
-    let pipelineStage = url.searchParams.get("stage") || mapGhlStage(stageName, status, source);
+    let stageParam = url.searchParams.get("stage");
+    if (stageParam) {
+      // Decode any URL double-encoding and replace literal "%20"
+      stageParam = decodeURIComponent(stageParam).replace(/%20/g, " ");
+      
+      // Standardize casing and spaces to match dashboard keys
+      const lower = stageParam.toLowerCase();
+      if (lower.includes("picked")) {
+        stageParam = "Picked Up";
+      } else if (lower.includes("closed") || lower.includes("won")) {
+        stageParam = "Closed Won";
+      } else if (lower.includes("dial")) {
+        stageParam = "Dialed";
+      } else if (lower.includes("sent")) {
+        stageParam = "Sent";
+      } else if (lower.includes("replied") || lower.includes("reply")) {
+        stageParam = "Replied";
+      } else if (lower.includes("booked") || lower.includes("book")) {
+        stageParam = "Booked";
+      } else if (lower.includes("show")) {
+        stageParam = "Showed";
+      }
+    }
+
+    let pipelineStage = stageParam || mapGhlStage(stageName, status, source);
 
     console.log(`GHL Webhook | upserting lead: externalId="${externalId}" stage="${pipelineStage}" (source: ${url.searchParams.get("stage") ? "URL param" : "Payload mapping"}) name="${name}" source="${source}"`);
 
