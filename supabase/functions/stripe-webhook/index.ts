@@ -45,6 +45,7 @@ serve(async (req) => {
         const { data: chalData } = await supabase
           .from("challenge")
           .select("user_id, id")
+          .order("created_at", { ascending: false })
           .limit(1);
 
         if (chalData && chalData.length > 0) {
