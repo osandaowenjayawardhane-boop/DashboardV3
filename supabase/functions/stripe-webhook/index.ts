@@ -40,33 +40,16 @@ serve(async (req) => {
       challengeId = obj.metadata?.challenge_id || obj.metadata?.challengeId || "";
 
       if (!userId) {
-        // If metadata is empty, try to match by customer email, or fallback to the first active challenge in public database
-        const customerEmail = obj.customer_details?.email || obj.customer_email || "";
+        // Fallback: Retrieve the first challenge in the database
         const supabase = getSupabaseClient();
-        
-        if (customerEmail) {
-          const { data: userData } = await supabase
-            .from("users") // Wait, standard auth users
-            .select("id")
-            .eq("email", customerEmail)
-            .limit(1);
+        const { data: chalData } = await supabase
+          .from("challenge")
+          .select("user_id, id")
+          .limit(1);
 
-          if (userData && userData.length > 0) {
-            userId = userData[0].id;
-          }
-        }
-
-        // Fallback: If still no userId, retrieve the first challenge in the database
-        if (!userId) {
-          const { data: chalData } = await supabase
-            .from("challenge")
-            .select("user_id, id")
-            .limit(1);
-
-          if (chalData && chalData.length > 0) {
-            userId = chalData[0].user_id;
-            challengeId = chalData[0].id;
-          }
+        if (chalData && chalData.length > 0) {
+          userId = chalData[0].user_id;
+          challengeId = chalData[0].id;
         }
       }
     }
