@@ -20,6 +20,7 @@ function updateClock() {
 document.addEventListener('DOMContentLoaded', () => {
   // Load background
   initBackground();
+  applyConsoleToggle();
 
   // Load configuration and bootstrap supabase
   const client = loadDatabaseConfig();
@@ -209,23 +210,52 @@ export function handleBackgroundUpload(event) {
   reader.readAsDataURL(file);
 }
 
+export function applyConsoleToggle() {
+  const show = localStorage.getItem('dashboard_show_console') !== 'false';
+  const consolePanel = document.getElementById('consolePanel');
+  const transitSection = document.querySelector('.transit-section');
+  
+  if (consolePanel && transitSection) {
+    if (show) {
+      consolePanel.style.display = 'flex';
+      transitSection.style.height = '320px';
+      transitSection.style.flex = '0 0 auto';
+    } else {
+      consolePanel.style.display = 'none';
+      transitSection.style.height = '100%';
+      transitSection.style.flex = '1 1 auto';
+    }
+  }
+  
+  const toggleSwitch = document.getElementById('toggleConsoleSwitch');
+  if (toggleSwitch) toggleSwitch.checked = show;
+}
+
 export function saveRewardSettings() {
   const name = document.getElementById('rewardNameInput')?.value || "Tokyo Vacation";
   const price = parseFloat(document.getElementById('dealPriceInput')?.value) || 1500;
   const closeRate = parseFloat(document.getElementById('closeRateInput')?.value) || 20;
   const image = document.getElementById('rewardImageInput')?.value || "";
+  const showConsole = document.getElementById('toggleConsoleSwitch')?.checked;
 
   localStorage.setItem('dashboard_reward_name', name);
   localStorage.setItem('dashboard_deal_price', price.toString());
   localStorage.setItem('dashboard_close_rate', closeRate.toString());
   localStorage.setItem('dashboard_reward_image', image);
+  localStorage.setItem('dashboard_show_console', showConsole ? 'true' : 'false');
+
+  applyConsoleToggle();
 
   // Trigger update to refresh display
   if (window.updateDashboardData) {
     window.updateDashboardData();
   }
-  closeSettingsModal();
-  showError("Reward settings saved successfully.", "success");
+
+  // Only close Settings modal if the change event was NOT triggered by the live toggle
+  if (document.activeElement?.id !== 'toggleConsoleSwitch') {
+    closeSettingsModal();
+    showError("Reward settings saved successfully.", "success");
+  }
 }
 
 export function initRewardSettings() {
@@ -233,11 +263,13 @@ export function initRewardSettings() {
   const price = localStorage.getItem('dashboard_deal_price') || "1500";
   const closeRate = localStorage.getItem('dashboard_close_rate') || "20";
   const image = localStorage.getItem('dashboard_reward_image') || "";
+  const showConsole = localStorage.getItem('dashboard_show_console') !== 'false';
 
   if (document.getElementById('rewardNameInput')) document.getElementById('rewardNameInput').value = name;
   if (document.getElementById('dealPriceInput')) document.getElementById('dealPriceInput').value = price;
   if (document.getElementById('closeRateInput')) document.getElementById('closeRateInput').value = closeRate;
   if (document.getElementById('rewardImageInput')) document.getElementById('rewardImageInput').value = image;
+  if (document.getElementById('toggleConsoleSwitch')) document.getElementById('toggleConsoleSwitch').checked = showConsole;
 }
 
 export function switchConsoleTab(tab) {
@@ -289,5 +321,6 @@ window.handleBackgroundUpload = handleBackgroundUpload;
 window.saveRewardSettings = saveRewardSettings;
 window.initRewardSettings = initRewardSettings;
 
-// Bind console tab switching
+// Bind console tab switching and view preferences
 window.switchConsoleTab = switchConsoleTab;
+window.applyConsoleToggle = applyConsoleToggle;

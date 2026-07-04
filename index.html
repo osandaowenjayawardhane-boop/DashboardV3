@@ -1446,6 +1446,27 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
+    /* ─── TOGGLE SWITCH STYLES ─── */
+    #toggleConsoleSwitch:checked + .switch-slider {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+    #toggleConsoleSwitch:checked + .switch-slider::before {
+      transform: translateX(14px);
+      background-color: #121220;
+    }
+    .switch-slider::before {
+      content: "";
+      position: absolute;
+      height: 12px;
+      width: 12px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--text-muted);
+      transition: .3s;
+      border-radius: 50%;
+    }
+
     /* ─── ANIMATIONS ─── */
     @keyframes livePulse {
       0%, 100% { opacity: 1; }
@@ -2644,6 +2665,22 @@
 
         <!-- Reset Button -->
         <button onclick="removeCustomBackground()" style="padding: 10px; border: 1px solid rgba(220, 38, 38, 0.25); border-radius: var(--radius-xs); background: rgba(220, 38, 38, 0.08); color: #ef4444; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px;">Reset to Default</button>
+
+        <!-- Divider -->
+        <hr style="border: 0; border-top: 1px solid var(--border-solid); margin: 12px 0;" />
+
+        <!-- Console View Toggle Option -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <h4 style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin: 0;">Goal Progress Monitor</h4>
+            <span style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">Show Vision Board & lead activity beneath the pipeline.</span>
+          </div>
+          <!-- Toggle Switch -->
+          <label class="switch-label" style="position: relative; display: inline-block; width: 34px; height: 20px; flex-shrink: 0; cursor: pointer;">
+            <input type="checkbox" id="toggleConsoleSwitch" style="opacity: 0; width: 0; height: 0;" onchange="saveRewardSettings()" />
+            <span class="switch-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.06); transition: .3s; border-radius: 10px; border: 1px solid var(--border-solid);"></span>
+          </label>
+        </div>
 
         <!-- Divider -->
         <hr style="border: 0; border-top: 1px solid var(--border-solid); margin: 12px 0;" />
