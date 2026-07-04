@@ -54,43 +54,82 @@ export class ActivityService {
    */
   async upsertLead(userId: string, challengeId: string, lead: LeadData) {
     const now = new Date().toISOString();
+    let existingId: string | null = null;
 
+    // 1. Try to search by external_id (matched to GHL Opportunity ID or Contact ID)
     if (lead.external_id) {
-      // Attempt update by GHL opportunity ID
-      const { data: existing, error: selectErr } = await this.supabase
+      console.log(`Searching for lead by external_id = "${lead.external_id}"`);
+      const { data: existingByExt, error: errExt } = await this.supabase
         .from("lead")
         .select("id")
         .eq("challenge_id", challengeId)
         .eq("external_id", lead.external_id)
         .limit(1);
 
-      console.log("Supabase select result:", { data: existing, error: selectErr });
-      if (selectErr) throw selectErr;
-
-      if (existing && existing.length > 0) {
-        // Update: always overwrite stage; overwrite contact fields only if provided
-        const updates: Record<string, unknown> = {
-          pipeline_stage: lead.pipeline_stage,
-          updated_at: now,
-        };
-        if (lead.name)    updates.name    = lead.name;
-        if (lead.phone)   updates.phone   = lead.phone;
-        if (lead.email)   updates.email   = lead.email;
-        if (lead.company) updates.company = lead.company;
-
-        const { data: updateData, error: updateErr } = await this.supabase
-          .from("lead")
-          .update(updates)
-          .eq("id", existing[0].id)
-          .select();
-
-        console.log("Supabase update result:", { data: updateData, error: updateErr });
-        if (updateErr) throw updateErr;
-        return;
+      if (!errExt && existingByExt && existingByExt.length > 0) {
+        existingId = existingByExt[0].id;
+        console.log(`Found existing lead by external_id: ${existingId}`);
       }
     }
 
-    // Insert new lead
+    // 2. Fallback: Search by phone (if provided)
+    if (!existingId && lead.phone) {
+      console.log(`Searching for lead by phone = "${lead.phone}"`);
+      const { data: existingByPhone, error: errPhone } = await this.supabase
+        .from("lead")
+        .select("id, external_id")
+        .eq("challenge_id", challengeId)
+        .eq("phone", lead.phone)
+        .limit(1);
+
+      if (!errPhone && existingByPhone && existingByPhone.length > 0) {
+        existingId = existingByPhone[0].id;
+        console.log(`Found existing lead by phone: ${existingId}`);
+      }
+    }
+
+    // 3. Fallback: Search by email (if provided)
+    if (!existingId && lead.email) {
+      console.log(`Searching for lead by email = "${lead.email}"`);
+      const { data: existingByEmail, error: errEmail } = await this.supabase
+        .from("lead")
+        .select("id, external_id")
+        .eq("challenge_id", challengeId)
+        .eq("email", lead.email)
+        .limit(1);
+
+      if (!errEmail && existingByEmail && existingByEmail.length > 0) {
+        existingId = existingByEmail[0].id;
+        console.log(`Found existing lead by email: ${existingId}`);
+      }
+    }
+
+    if (existingId) {
+      // Execute UPDATE
+      console.log(`Performing UPDATE on lead id: ${existingId}`);
+      const updates: Record<string, unknown> = {
+        pipeline_stage: lead.pipeline_stage,
+        updated_at: now,
+      };
+      if (lead.name)    updates.name    = lead.name;
+      if (lead.phone)   updates.phone   = lead.phone;
+      if (lead.email)   updates.email   = lead.email;
+      if (lead.company) updates.company = lead.company;
+      if (lead.external_id) updates.external_id = lead.external_id;
+
+      const { data: updateData, error: updateErr } = await this.supabase
+        .from("lead")
+        .update(updates)
+        .eq("id", existingId)
+        .select();
+
+      console.log("Supabase update result:", { data: updateData, error: updateErr });
+      if (updateErr) throw updateErr;
+      return;
+    }
+
+    // Execute INSERT
+    console.log(`Performing INSERT for new lead`);
     const { data: insertData, error: insertErr } = await this.supabase
       .from("lead")
       .insert({
