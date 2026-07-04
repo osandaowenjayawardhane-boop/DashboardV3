@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 export let supabaseClient = null;
 
-export const DEFAULT_URL = import.meta.env.VITE_SUPABASE_URL || "";
-export const DEFAULT_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+export const DEFAULT_URL = import.meta.env.VITE_SUPABASE_URL || "https://rohucegtruxdcwjserfu.supabase.co";
+export const DEFAULT_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "sb_publishable_SvfOGaHZaIpYLISilVJYlA__08r0pHu";
 
 export function initSupabase(url, key) {
   try {
