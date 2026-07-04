@@ -285,13 +285,12 @@ export function subscribeToRealtime(userId, challengeId) {
         triggerCelebration();
       }
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'revenue' }, (payload) => {
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'revenue' }, (payload) => {
       fetchAndRenderDashboard();
 
-      // Trigger celebration on new revenue record insertion
-      if (payload.eventType === 'INSERT' && payload.new && parseFloat(payload.new.amount) > 0) {
-        triggerCelebration();
-      }
+      // Trigger celebration — REPLICA IDENTITY FULL ensures payload.new is always complete
+      const amount = payload.new ? parseFloat(payload.new.amount) : 0;
+      triggerCelebration(amount > 0 ? amount : undefined);
     });
 
   realtimeSubscription.subscribe((status) => {

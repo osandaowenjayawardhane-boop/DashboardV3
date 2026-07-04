@@ -265,3 +265,9 @@ CREATE TRIGGER trg_lead_updated_at
 
 -- Add stripe_id to revenue table to prevent duplicate transaction counts from Stripe
 ALTER TABLE public.revenue ADD COLUMN IF NOT EXISTS stripe_id TEXT UNIQUE;
+
+-- Enable REPLICA IDENTITY FULL so Supabase Realtime sends complete row data in all event payloads
+-- (required for payload.new.amount and payload.old.pipeline_stage to be available in the browser)
+ALTER TABLE public.revenue REPLICA IDENTITY FULL;
+ALTER TABLE public.lead REPLICA IDENTITY FULL;
+ALTER TABLE public.challenge REPLICA IDENTITY FULL;
