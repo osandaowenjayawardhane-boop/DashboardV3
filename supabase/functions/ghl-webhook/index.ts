@@ -99,7 +99,16 @@ function extractPayloadData(p: Rec) {
   const company  = str(p.companyName)  || str(contact.companyName)|| str(p.company)   || null;
 
   // ── Source: default to cold_call unless tagged otherwise ─────────────────
-  const tags: string[] = (p.tags as string[]) ?? (contact.tags as string[]) ?? [];
+  // Normalize tags — GHL sends "" (empty string), a CSV string, or a real array
+  const rawTags = p.tags ?? contact.tags;
+  let tags: string[];
+  if (Array.isArray(rawTags)) {
+    tags = rawTags.map(String);
+  } else if (typeof rawTags === "string" && rawTags.trim() !== "") {
+    tags = rawTags.split(",").map(t => t.trim()).filter(Boolean);
+  } else {
+    tags = [];
+  }
   const source: "cold_call" | "cold_dm" =
     tags.some(t => ["cold_dm", "dm", "DM"].includes(t)) ? "cold_dm" : "cold_call";
 
