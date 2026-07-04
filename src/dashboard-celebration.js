@@ -5,15 +5,16 @@ export let isSoundEnabled = localStorage.getItem('dashboard_sound_enabled') !== 
 // Mixkit register cash register chime SFX
 const kachingSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2017/2017-84.wav");
 
-let pendingCelebrationsCount = 0;
+let pendingCelebrations = [];
 let isCelebrating = false;
 
-// Check visibility change to catch up on missed celebrations
+// Check visibility change — fire any queued celebrations when user returns to tab
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && pendingCelebrationsCount > 0) {
-    console.log(`User returned to tab. Triggering ${pendingCelebrationsCount} queued celebrations!`);
-    pendingCelebrationsCount = 0;
-    triggerCelebrationAction();
+  if (!document.hidden && pendingCelebrations.length > 0) {
+    const queued = pendingCelebrations;
+    pendingCelebrations = [];
+    // fire the most recent queued one (collapse multiples into one)
+    triggerCelebrationAction(queued[queued.length - 1]);
   }
 });
 
@@ -33,89 +34,96 @@ export function updateSoundButtonUI() {
 
 export function triggerCelebration(amount) {
   if (document.hidden) {
-    pendingCelebrationsCount++;
-    console.log("Tab is hidden. Queuing celebration. Total pending:", pendingCelebrationsCount);
+    pendingCelebrations.push(amount);
     return;
   }
   triggerCelebrationAction(amount);
 }
 
 function triggerCelebrationAction(amount) {
-  if (isCelebrating) return; // Prevent overlapping popups
+  if (isCelebrating) return;
   isCelebrating = true;
 
   // 1. Play sound
   if (isSoundEnabled) {
-    kachingSound.currentTime = 0; // Rewind
-    kachingSound.play().catch(e => console.log("Audio play blocked by browser autoplay policy:", e));
+    kachingSound.currentTime = 0;
+    kachingSound.play().catch(() => {});
   }
 
-  // 2. Create popup card DOM elements
-  const overlay = document.createElement('div');
-  overlay.className = 'celebration-overlay';
-  
-  const card = document.createElement('div');
-  card.className = 'celebration-card';
-  
-  const icon = document.createElement('div');
-  icon.className = 'celebration-icon';
-  icon.textContent = '🚀';
-  
-  const title = document.createElement('div');
-  title.className = 'celebration-title';
-  title.textContent = 'MISSION ACCOMPLISHED';
-  
-  const subtitle = document.createElement('div');
-  subtitle.className = 'celebration-subtitle';
-  subtitle.textContent = amount ? 'Revenue Secured!' : 'Deal Closed Won!';
-  
-  card.appendChild(icon);
-  card.appendChild(title);
-  card.appendChild(subtitle);
-  
-  if (amount) {
-    const value = document.createElement('div');
-    value.className = 'celebration-value';
-    value.textContent = `+$${parseFloat(amount).toLocaleString()}`;
-    card.appendChild(value);
-  }
-  
-  overlay.appendChild(card);
-  document.body.appendChild(overlay);
+  // 2. Build the toast card
+  const isRevenue = amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
+  const formattedAmount = isRevenue
+    ? `+$${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+    : null;
 
-  // 3. Fire Confetti
-  const duration = 2.5 * 1000;
-  const animationEnd = Date.now() + duration;
-  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999999 };
+  const toast = document.createElement('div');
+  toast.className = 'cel-toast';
 
-  function randomInRange(min, max) {
-    return Math.random() * (max - min) + min;
-  }
+  toast.innerHTML = `
+    <div class="cel-glow"></div>
+    <div class="cel-inner">
+      <div class="cel-left">
+        <div class="cel-icon-wrap">
+          <svg class="cel-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="10" fill="rgba(69,53,204,0.12)"/>
+            <path d="M6 10.5L8.8 13.5L14 7.5" stroke="#4535cc" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="cel-body">
+        <div class="cel-label">${isRevenue ? 'Revenue Secured' : 'Deal Closed'}</div>
+        ${formattedAmount ? `<div class="cel-amount">${formattedAmount}</div>` : ''}
+        <div class="cel-sublabel">${isRevenue ? 'Stripe payment confirmed' : 'Lead moved to Closed Won'}</div>
+      </div>
+      <button class="cel-dismiss" aria-label="Dismiss">✕</button>
+    </div>
+    <div class="cel-progress-bar"></div>
+  `;
 
-  const interval = setInterval(function() {
-    const timeLeft = animationEnd - Date.now();
+  document.body.appendChild(toast);
 
-    if (timeLeft <= 0) {
-      return clearInterval(interval);
-    }
+  // Dismiss button
+  toast.querySelector('.cel-dismiss').addEventListener('click', () => dismiss(toast));
 
-    const particleCount = 50 * (timeLeft / duration);
-    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-  }, 250);
+  // 3. Light confetti burst — subtle, from top corners only
+  const colours = ['#4535cc', '#9b8ae7', '#ef6b51', '#ffffff'];
+  confetti({
+    particleCount: 60,
+    angle: 120,
+    spread: 55,
+    origin: { x: 1, y: 0 },
+    colors: colours,
+    startVelocity: 28,
+    ticks: 80,
+    zIndex: 999999,
+  });
+  confetti({
+    particleCount: 60,
+    angle: 60,
+    spread: 55,
+    origin: { x: 0, y: 0 },
+    colors: colours,
+    startVelocity: 28,
+    ticks: 80,
+    zIndex: 999999,
+  });
 
-  // 4. Fade out and remove after 4 seconds
+  // 4. Auto-dismiss after 5s
+  const autoDismiss = setTimeout(() => dismiss(toast), 5000);
+  toast._autoDismiss = autoDismiss;
+}
+
+function dismiss(toast) {
+  clearTimeout(toast._autoDismiss);
+  toast.classList.add('cel-toast--out');
   setTimeout(() => {
-    overlay.classList.add('fade-out');
-    setTimeout(() => {
-      overlay.remove();
-      isCelebrating = false;
-      
-      // If any events got queued while celebrating, trigger the next one
-      if (pendingCelebrationsCount > 0) {
-        pendingCelebrationsCount--;
-        triggerCelebrationAction();
-      }
-    }, 500);
-  }, 4000);
+    toast.remove();
+    isCelebrating = false;
+
+    // Fire next queued celebration if any
+    if (pendingCelebrations.length > 0) {
+      const next = pendingCelebrations.shift();
+      setTimeout(() => triggerCelebrationAction(next), 200);
+    }
+  }, 380);
 }
