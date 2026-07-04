@@ -2,18 +2,15 @@ import confetti from 'canvas-confetti';
 
 export let isSoundEnabled = localStorage.getItem('dashboard_sound_enabled') !== 'false';
 
-// Mixkit register cash register chime SFX
 const kachingSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2017/2017-84.wav");
 
 let pendingCelebrations = [];
 let isCelebrating = false;
 
-// Check visibility change — fire any queued celebrations when user returns to tab
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && pendingCelebrations.length > 0) {
     const queued = pendingCelebrations;
     pendingCelebrations = [];
-    // fire the most recent queued one (collapse multiples into one)
     triggerCelebrationAction(queued[queued.length - 1]);
   }
 });
@@ -44,22 +41,33 @@ function triggerCelebrationAction(amount) {
   if (isCelebrating) return;
   isCelebrating = true;
 
-  // 1. Play sound
+  // 1. Sound
   if (isSoundEnabled) {
     kachingSound.currentTime = 0;
     kachingSound.play().catch(() => {});
   }
 
-  // 2. Build the toast card
   const isRevenue = amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
   const formattedAmount = isRevenue
     ? `+$${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
     : null;
 
+  // 2. Blur backdrop
+  const backdrop = document.createElement('div');
+  backdrop.className = 'cel-backdrop';
+  document.body.appendChild(backdrop);
+
+  // 3. Build toast
   const toast = document.createElement('div');
   toast.className = 'cel-toast';
 
+  // CSS sparkle stars (12 of them, random directions)
+  const sparkleHTML = Array.from({ length: 12 }, (_, i) =>
+    `<div class="cel-sparkle cel-sparkle-${i + 1}"></div>`
+  ).join('');
+
   toast.innerHTML = `
+    ${sparkleHTML}
     <div class="cel-glow"></div>
     <div class="cel-inner">
       <div class="cel-left">
@@ -81,49 +89,71 @@ function triggerCelebrationAction(amount) {
   `;
 
   document.body.appendChild(toast);
+  toast.querySelector('.cel-dismiss').addEventListener('click', () => dismiss(toast, backdrop));
 
-  // Dismiss button
-  toast.querySelector('.cel-dismiss').addEventListener('click', () => dismiss(toast));
+  // 4. Confetti — fires from bottom-right (where toast lives)
+  const colours = ['#4535cc', '#9b8ae7', '#ef6b51', '#ffffff', '#ffd700', '#a78bfa'];
 
-  // 3. Light confetti burst — subtle, from top corners only
-  const colours = ['#4535cc', '#9b8ae7', '#ef6b51', '#ffffff'];
+  // First burst — immediate
   confetti({
-    particleCount: 60,
-    angle: 120,
-    spread: 55,
-    origin: { x: 1, y: 0 },
+    particleCount: 80,
+    angle: 125,
+    spread: 70,
+    origin: { x: 0.97, y: 0.97 },
     colors: colours,
-    startVelocity: 28,
-    ticks: 80,
-    zIndex: 999999,
-  });
-  confetti({
-    particleCount: 60,
-    angle: 60,
-    spread: 55,
-    origin: { x: 0, y: 0 },
-    colors: colours,
-    startVelocity: 28,
-    ticks: 80,
-    zIndex: 999999,
+    startVelocity: 45,
+    ticks: 120,
+    scalar: 0.9,
+    zIndex: 999997,
   });
 
-  // 4. Auto-dismiss after 5s
-  const autoDismiss = setTimeout(() => dismiss(toast), 5000);
+  // Second burst — slight delay for layered effect
+  setTimeout(() => {
+    confetti({
+      particleCount: 60,
+      angle: 110,
+      spread: 55,
+      origin: { x: 0.97, y: 0.97 },
+      colors: colours,
+      startVelocity: 38,
+      ticks: 100,
+      scalar: 0.75,
+      shapes: ['circle'],
+      zIndex: 999997,
+    });
+  }, 180);
+
+  // Third burst — trailing sparkle shower
+  setTimeout(() => {
+    confetti({
+      particleCount: 40,
+      angle: 140,
+      spread: 90,
+      origin: { x: 0.97, y: 0.97 },
+      colors: colours,
+      startVelocity: 28,
+      ticks: 90,
+      scalar: 0.6,
+      zIndex: 999997,
+    });
+  }, 400);
+
+  // 5. Auto-dismiss after 5s
+  const autoDismiss = setTimeout(() => dismiss(toast, backdrop), 5000);
   toast._autoDismiss = autoDismiss;
 }
 
-function dismiss(toast) {
+function dismiss(toast, backdrop) {
   clearTimeout(toast._autoDismiss);
   toast.classList.add('cel-toast--out');
+  backdrop.classList.add('cel-backdrop--out');
   setTimeout(() => {
     toast.remove();
+    backdrop.remove();
     isCelebrating = false;
-
-    // Fire next queued celebration if any
     if (pendingCelebrations.length > 0) {
       const next = pendingCelebrations.shift();
       setTimeout(() => triggerCelebrationAction(next), 200);
     }
-  }, 380);
+  }, 400);
 }
