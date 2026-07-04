@@ -176,9 +176,30 @@ serve(async (req) => {
     }
 
     const service = new ActivityService();
-    if (!challengeId) {
-      const chal = await service.getActiveChallenge(userId);
-      challengeId = chal.id;
+
+    // Validate if the provided challengeId exists in the database
+    let challengeExists = false;
+    if (challengeId) {
+      const supabase = getSupabaseClient();
+      const { data: chalCheck } = await supabase
+        .from("challenge")
+        .select("id")
+        .eq("id", challengeId)
+        .limit(1);
+      if (chalCheck && chalCheck.length > 0) {
+        challengeExists = true;
+      }
+    }
+
+    if (!challengeId || !challengeExists) {
+      console.log(`Provided challenge ID "${challengeId}" is missing or invalid. Fetching active challenge...`);
+      try {
+        const chal = await service.getActiveChallenge(userId);
+        challengeId = chal.id;
+        console.log(`Resolved active challenge ID: "${challengeId}"`);
+      } catch (chalErr) {
+        console.error("Could not fetch active challenge:", chalErr);
+      }
     }
 
     // ── Decide whether to process ─────────────────────────────────────────
