@@ -223,8 +223,17 @@ serve(async (req) => {
     });
 
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error(`GHL Webhook error: ${msg}`, rawBody.slice(0, 500));
+    console.error("GHL Webhook error:", err);
+    let msg = "";
+    if (err instanceof Error) {
+      msg = err.message;
+      console.error(err.stack);
+    } else if (err && typeof err === "object") {
+      msg = (err as any).message || (err as any).error_description || JSON.stringify(err);
+      console.error(JSON.stringify(err, null, 2));
+    } else {
+      msg = String(err);
+    }
     return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

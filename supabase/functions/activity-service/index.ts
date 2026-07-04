@@ -64,6 +64,7 @@ export class ActivityService {
         .eq("external_id", lead.external_id)
         .limit(1);
 
+      console.log("Supabase select result:", { data: existing, error: selectErr });
       if (selectErr) throw selectErr;
 
       if (existing && existing.length > 0) {
@@ -77,18 +78,20 @@ export class ActivityService {
         if (lead.email)   updates.email   = lead.email;
         if (lead.company) updates.company = lead.company;
 
-        const { error: updateErr } = await this.supabase
+        const { data: updateData, error: updateErr } = await this.supabase
           .from("lead")
           .update(updates)
-          .eq("id", existing[0].id);
+          .eq("id", existing[0].id)
+          .select();
 
+        console.log("Supabase update result:", { data: updateData, error: updateErr });
         if (updateErr) throw updateErr;
         return;
       }
     }
 
     // Insert new lead
-    const { error: insertErr } = await this.supabase
+    const { data: insertData, error: insertErr } = await this.supabase
       .from("lead")
       .insert({
         user_id: userId,
@@ -102,8 +105,10 @@ export class ActivityService {
         external_id: lead.external_id || null,
         created_at: now,
         updated_at: now,
-      });
+      })
+      .select();
 
+    console.log("Supabase insert result:", { data: insertData, error: insertErr });
     if (insertErr) throw insertErr;
   }
 
