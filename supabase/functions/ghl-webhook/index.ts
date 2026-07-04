@@ -205,9 +205,10 @@ serve(async (req) => {
     const { stageName, status, externalId, name, phone, email, company, source } =
       extractPayloadData(payload);
 
-    const pipelineStage = mapGhlStage(stageName, status, source);
+    // Map the stage name, checking first if it was passed explicitly in the URL query parameters
+    let pipelineStage = url.searchParams.get("stage") || mapGhlStage(stageName, status, source);
 
-    console.log(`GHL Webhook | upserting lead: externalId="${externalId}" stage="${pipelineStage}" name="${name}" source="${source}"`);
+    console.log(`GHL Webhook | upserting lead: externalId="${externalId}" stage="${pipelineStage}" (source: ${url.searchParams.get("stage") ? "URL param" : "Payload mapping"}) name="${name}" source="${source}"`);
 
     await service.upsertLead(userId, challengeId, {
       name:           name ?? undefined,
