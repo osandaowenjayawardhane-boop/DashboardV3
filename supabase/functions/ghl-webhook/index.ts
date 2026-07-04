@@ -64,11 +64,13 @@ function extractPayloadData(p: Rec) {
   // ── Opportunity / stage info ────────────────────────────────────────────
   // Workflow webhooks put stageName at top-level; API webhooks nest it
   const stageName =
-    str(p.stageName)         ||
-    str(p.stage_name)        ||
-    str(opp.stageName)       ||
-    str(opp.stage_name)      ||
-    str(opp.name)            || // some GHL versions use opportunity.name for stage
+    str(p.stageName)           ||
+    str(p.stage_name)          ||
+    str(p.pipeline_stage)      ||
+    str(p.pipeline_stage_name) ||
+    str(opp.stageName)         ||
+    str(opp.stage_name)        ||
+    str(opp.name)              || 
     "";
 
   const status =
