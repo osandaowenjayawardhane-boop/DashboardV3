@@ -263,19 +263,24 @@ export function subscribeToRealtime(userId, challengeId) {
   unsubscribeFromRealtime();
 
   realtimeSubscription = supabaseClient.channel('live-mission-control')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'challenge', filter: `user_id=eq.${userId}` }, () => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'challenge' }, () => {
       loadUserChallenge(userId);
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'lead', filter: `challenge_id=eq.${challengeId}` }, () => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'lead' }, () => {
       fetchAndRenderDashboard();
+      // If the Leads directory panel is currently visible, refresh it too
+      const leadsPanel = document.getElementById('leadsPanel');
+      if (leadsPanel && leadsPanel.style.display !== 'none') {
+        import('./leads.js').then(m => m.fetchAndRenderLeads());
+      }
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'revenue', filter: `challenge_id=eq.${challengeId}` }, () => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'revenue' }, () => {
       fetchAndRenderDashboard();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_revenue', filter: `challenge_id=eq.${challengeId}` }, () => {
-      fetchAndRenderDashboard();
-    })
-    .subscribe();
+    });
+
+  realtimeSubscription.subscribe((status) => {
+    console.log("Supabase Realtime subscription status:", status);
+  });
 }
 
 export function unsubscribeFromRealtime() {
