@@ -883,38 +883,48 @@
     }
 
     /* ─── DEPARTURES PANEL ─── */
-    .departure-item {
+    .departure-group {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
+      flex-direction: column;
+      padding: 12px 14px;
       border-radius: var(--radius-sm);
       background: transparent;
       border: 1px solid transparent;
+      border-bottom: 1px solid rgba(197, 168, 128, 0.08);
       transition: all 0.2s ease;
       cursor: default;
     }
 
-    .departure-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.08);
+    .departure-group:last-of-type {
+      border-bottom: none;
+    }
+
+    .departure-group:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(197, 168, 128, 0.12);
+    }
+
+    .departure-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .departure-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       flex-shrink: 0;
     }
 
     .departure-dot.purple { background: var(--line-1); box-shadow: 0 0 6px var(--line-1-glow); }
     .departure-dot.coral { background: var(--line-2); box-shadow: 0 0 6px var(--line-2-glow); }
-    .departure-dot.neutral { background: var(--neutral); }
+    .departure-dot.neutral { background: rgba(255, 255, 255, 0.25); }
 
     .departure-info { flex: 1; min-width: 0; }
 
     .departure-name {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--text);
       line-height: 1.2;
@@ -922,8 +932,8 @@
 
     .departure-target {
       font-size: 10px;
-      color: var(--text-dim);
-      margin-top: 1px;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
     .departure-count {
@@ -935,11 +945,12 @@
     }
 
     .departure-bar-track {
-      width: 100%;
+      width: calc(100% - 20px);
+      margin-left: 20px;
       height: 3px;
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 2px;
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
     .departure-bar-fill {
@@ -950,7 +961,7 @@
 
     .departure-bar-fill.purple { background: linear-gradient(90deg, var(--accent-light), var(--line-1)); }
     .departure-bar-fill.coral { background: linear-gradient(90deg, #c3b091, var(--line-2)); }
-    .departure-bar-fill.neutral { background: var(--text-dim); }
+    .departure-bar-fill.neutral { background: rgba(255, 255, 255, 0.25); }
 
     .departures-total {
       margin-top: auto;
@@ -2120,52 +2131,60 @@
           <div class="panel-label">Departures · Today</div>
         </div>
         <div class="panel-body">
-          <div class="departure-item">
-            <div class="departure-dot purple"></div>
-            <div class="departure-info">
-              <div class="departure-name">Cold Calls</div>
-              <div class="departure-target">Goal: 50</div>
+          <div class="departure-group">
+            <div class="departure-item">
+              <div class="departure-dot purple"></div>
+              <div class="departure-info">
+                <div class="departure-name">Cold Calls</div>
+                <div class="departure-target">Goal: 50</div>
+              </div>
+              <div class="departure-count" id="depCallsCount">0</div>
             </div>
-            <div class="departure-count" id="depCallsCount">0</div>
-          </div>
-          <div class="departure-bar-track">
-            <div class="departure-bar-fill purple" id="depCallsBar" style="width: 0%"></div>
+            <div class="departure-bar-track">
+              <div class="departure-bar-fill purple" id="depCallsBar" style="width: 0%"></div>
+            </div>
           </div>
 
-          <div class="departure-item">
-            <div class="departure-dot coral"></div>
-            <div class="departure-info">
-              <div class="departure-name">Cold DMs</div>
-              <div class="departure-target">Goal: 100</div>
+          <div class="departure-group">
+            <div class="departure-item">
+              <div class="departure-dot coral"></div>
+              <div class="departure-info">
+                <div class="departure-name">Cold DMs</div>
+                <div class="departure-target">Goal: 100</div>
+              </div>
+              <div class="departure-count" id="depDmsCount">0</div>
             </div>
-            <div class="departure-count" id="depDmsCount">0</div>
-          </div>
-          <div class="departure-bar-track">
-            <div class="departure-bar-fill coral" id="depDmsBar" style="width: 0%"></div>
+            <div class="departure-bar-track">
+              <div class="departure-bar-fill coral" id="depDmsBar" style="width: 0%"></div>
+            </div>
           </div>
 
-          <div class="departure-item">
-            <div class="departure-dot neutral"></div>
-            <div class="departure-info">
-              <div class="departure-name">Follow-ups</div>
-              <div class="departure-target">Goal: 30</div>
+          <div class="departure-group">
+            <div class="departure-item">
+              <div class="departure-dot neutral"></div>
+              <div class="departure-info">
+                <div class="departure-name">Follow-ups</div>
+                <div class="departure-target">Goal: 30</div>
+              </div>
+              <div class="departure-count" id="depFollowupsCount">0</div>
             </div>
-            <div class="departure-count" id="depFollowupsCount">0</div>
-          </div>
-          <div class="departure-bar-track">
-            <div class="departure-bar-fill neutral" id="depFollowupsBar" style="width: 0%"></div>
+            <div class="departure-bar-track">
+              <div class="departure-bar-fill neutral" id="depFollowupsBar" style="width: 0%"></div>
+            </div>
           </div>
 
-          <div class="departure-item">
-            <div class="departure-dot neutral"></div>
-            <div class="departure-info">
-              <div class="departure-name">Content Posted</div>
-              <div class="departure-target">Goal: 5</div>
+          <div class="departure-group">
+            <div class="departure-item">
+              <div class="departure-dot neutral"></div>
+              <div class="departure-info">
+                <div class="departure-name">Content Posted</div>
+                <div class="departure-target">Goal: 5</div>
+              </div>
+              <div class="departure-count" id="depContentCount">0</div>
             </div>
-            <div class="departure-count" id="depContentCount">0</div>
-          </div>
-          <div class="departure-bar-track">
-            <div class="departure-bar-fill neutral" id="depContentBar" style="width: 0%"></div>
+            <div class="departure-bar-track">
+              <div class="departure-bar-fill neutral" id="depContentBar" style="width: 0%"></div>
+            </div>
           </div>
 
           <div class="departures-total">
