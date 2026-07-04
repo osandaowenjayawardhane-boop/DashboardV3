@@ -3,6 +3,7 @@ import { loadDatabaseConfig, saveDatabaseConfig, initSupabase, supabaseClient } 
 import { handleAuth, handleLogout, toggleAuthMode, showError } from './auth.js';
 import { loadUserChallenge, unsubscribeFromRealtime } from './dashboard.js';
 import { toggleDashboardSound, updateSoundButtonUI } from './dashboard-celebration.js';
+import './countdown.js'; // start the daily mission countdown timer
 
 // ─── CLOCK UPDATE ───
 function updateClock() {

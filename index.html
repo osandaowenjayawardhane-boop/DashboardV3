@@ -265,6 +265,67 @@
       font-weight: 600;
     }
 
+    /* ─── DAILY MISSION TIMER ─── */
+    .mission-timer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      padding: 3px 8px;
+      border-radius: var(--radius-xs);
+      background: var(--whitesmoke-400);
+      border: 1px solid var(--border-solid);
+      transition: color 0.4s, background 0.4s, border-color 0.4s;
+    }
+    .mission-timer .timer-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: timer-pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+      transition: background 0.4s;
+    }
+    /* Amber — under 3 hours */
+    .mission-timer.timer-warn {
+      color: #b45309;
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+    .mission-timer.timer-warn .timer-dot { background: #f59e0b; }
+    /* Red — under 1 hour */
+    .mission-timer.timer-urgent {
+      color: #b91c1c;
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .mission-timer.timer-urgent .timer-dot {
+      background: #ef4444;
+      animation: timer-pulse-fast 0.8s ease-in-out infinite;
+    }
+    @keyframes timer-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.8); }
+    }
+    @keyframes timer-pulse-fast {
+      0%, 100% { opacity: 1; transform: scale(1.2); }
+      50%       { opacity: 0.3; transform: scale(0.7); }
+    }
+    .mission-timer .timer-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.65;
+      margin-right: 1px;
+    }
+    /* Dummy closing brace — DO NOT REMOVE, satisfies the replacement */
+    .mission-timer-x {
+    }
+
     .header-percentage {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -1697,6 +1758,11 @@
       <div class="header-meta">
         <div class="day-counter" id="dayCounter">DAY <strong>0</strong> / 28</div>
         <div class="header-percentage" id="headerPct">0%</div>
+        <div class="mission-timer" id="missionTimer">
+          <span class="timer-dot"></span>
+          <span class="timer-label">Today</span>
+          <span id="missionTimerDisplay">--:--:--</span>
+        </div>
         <button class="sound-toggle-btn" id="soundToggleBtn" onclick="toggleDashboardSound()" title="Mute sound" style="background: none; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); padding: 4px; font-size: 10px; cursor: pointer; color: var(--text-secondary); margin-right: 6px; display: inline-flex; align-items: center; justify-content: center; height: 21px; width: 21px; transition: all 0.2s;">🔊</button>
         <button class="logout-button" onclick="handleLogout()">Sign Out</button>
       </div>
