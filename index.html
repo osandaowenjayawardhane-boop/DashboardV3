@@ -286,7 +286,8 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .logout-button:hover {
+    .logout-button:hover,
+    .sound-toggle-btn:hover {
       background: var(--whitesmoke-100);
       color: var(--text);
       border-color: var(--border-hover);
@@ -1558,6 +1559,7 @@
       <div class="header-meta">
         <div class="day-counter" id="dayCounter">DAY <strong>0</strong> / 28</div>
         <div class="header-percentage" id="headerPct">0%</div>
+        <button class="sound-toggle-btn" id="soundToggleBtn" onclick="toggleDashboardSound()" title="Mute sound" style="background: none; border: 1px solid var(--border-solid); border-radius: var(--radius-xs); padding: 4px; font-size: 10px; cursor: pointer; color: var(--text-secondary); margin-right: 6px; display: inline-flex; align-items: center; justify-content: center; height: 21px; width: 21px; transition: all 0.2s;">🔊</button>
         <button class="logout-button" onclick="handleLogout()">Sign Out</button>
       </div>
     </header>

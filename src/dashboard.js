@@ -1,5 +1,6 @@
 // src/dashboard.js
 import { supabaseClient } from './supabase.js';
+import { triggerCelebration } from './dashboard-celebration.js';
 
 export let currentChallenge = null;
 let realtimeSubscription = null;
@@ -266,16 +267,31 @@ export function subscribeToRealtime(userId, challengeId) {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'challenge' }, () => {
       loadUserChallenge(userId);
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'lead' }, () => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'lead' }, (payload) => {
       fetchAndRenderDashboard();
       // If the Leads directory panel is currently visible, refresh it too
       const leadsPanel = document.getElementById('leadsPanel');
       if (leadsPanel && leadsPanel.style.display !== 'none') {
         import('./leads.js').then(m => m.fetchAndRenderLeads());
       }
+
+      // Trigger celebration if a lead is moved to Closed Won
+      if (
+        payload.eventType === 'UPDATE' &&
+        payload.new &&
+        payload.new.pipeline_stage === 'Closed Won' &&
+        (!payload.old || payload.old.pipeline_stage !== 'Closed Won')
+      ) {
+        triggerCelebration();
+      }
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'revenue' }, () => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'revenue' }, (payload) => {
       fetchAndRenderDashboard();
+
+      // Trigger celebration on new revenue record insertion
+      if (payload.eventType === 'INSERT' && payload.new && parseFloat(payload.new.amount) > 0) {
+        triggerCelebration();
+      }
     });
 
   realtimeSubscription.subscribe((status) => {

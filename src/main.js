@@ -2,6 +2,7 @@
 import { loadDatabaseConfig, saveDatabaseConfig, initSupabase, supabaseClient } from './supabase.js';
 import { handleAuth, handleLogout, toggleAuthMode, showError } from './auth.js';
 import { loadUserChallenge, unsubscribeFromRealtime } from './dashboard.js';
+import { toggleDashboardSound, updateSoundButtonUI } from './dashboard-celebration.js';
 
 // ─── CLOCK UPDATE ───
 function updateClock() {
@@ -36,6 +37,7 @@ function setupAuthListeners(client) {
       document.getElementById('authContainer').style.display = 'none';
       document.getElementById('dashboard').style.display = 'grid';
       loadUserChallenge(session.user.id);
+      updateSoundButtonUI();
     } else {
       document.getElementById('authContainer').style.display = 'flex';
       document.getElementById('dashboard').style.display = 'none';
@@ -114,3 +116,4 @@ window.toggleAuthMode = toggleAuthMode;
 window.handleLogout = handleLogout;
 window.handleAuth = (event) => handleAuth(event, () => {});
 window.switchViewTab = switchViewTab;
+window.toggleDashboardSound = toggleDashboardSound;
