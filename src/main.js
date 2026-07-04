@@ -22,6 +22,26 @@ document.addEventListener('DOMContentLoaded', () => {
   initBackground();
   applyConsoleToggle();
 
+  // Close modals when clicking backdrop outside content
+  const settingsModal = document.getElementById('settingsModal');
+  if (settingsModal) {
+    settingsModal.addEventListener('mousedown', (e) => {
+      if (e.target === settingsModal) {
+        closeSettingsModal();
+      }
+    });
+  }
+
+  const leadModal = document.getElementById('leadModal');
+  if (leadModal) {
+    leadModal.addEventListener('mousedown', (e) => {
+      if (e.target === leadModal) {
+        // Trigger leadModal close
+        leadModal.style.display = 'none';
+      }
+    });
+  }
+
   // Load configuration and bootstrap supabase
   const client = loadDatabaseConfig();
   if (client) {
@@ -272,34 +292,6 @@ export function initRewardSettings() {
   if (document.getElementById('toggleConsoleSwitch')) document.getElementById('toggleConsoleSwitch').checked = showConsole;
 }
 
-export function switchConsoleTab(tab) {
-  const tabVision = document.getElementById('consoleTabVision');
-  const tabActivity = document.getElementById('consoleTabActivity');
-  const contentVision = document.getElementById('consoleContentVision');
-  const contentActivity = document.getElementById('consoleContentActivity');
-  const statusText = document.getElementById('consoleStatusText');
-
-  if (!tabVision || !tabActivity || !contentVision || !contentActivity) return;
-
-  if (tab === 'vision') {
-    tabVision.style.color = 'var(--text-primary)';
-    tabVision.style.borderBottomColor = 'var(--accent)';
-    tabActivity.style.color = 'var(--text-muted)';
-    tabActivity.style.borderBottomColor = 'transparent';
-    contentVision.style.display = 'flex';
-    contentActivity.style.display = 'none';
-    if (statusText) statusText.textContent = "Goal Progress Monitor";
-  } else {
-    tabVision.style.color = 'var(--text-muted)';
-    tabVision.style.borderBottomColor = 'transparent';
-    tabActivity.style.color = 'var(--text-primary)';
-    tabActivity.style.borderBottomColor = 'var(--accent)';
-    contentVision.style.display = 'none';
-    contentActivity.style.display = 'flex';
-    if (statusText) statusText.textContent = "Real-time Lead Activity";
-  }
-}
-
 // Bind HTML events to module handlers
 window.toggleSetupPanel = toggleSetupPanel;
 window.saveDatabaseConfig = handleDatabaseSetupSave;
@@ -321,6 +313,5 @@ window.handleBackgroundUpload = handleBackgroundUpload;
 window.saveRewardSettings = saveRewardSettings;
 window.initRewardSettings = initRewardSettings;
 
-// Bind console tab switching and view preferences
-window.switchConsoleTab = switchConsoleTab;
+// Bind console view preferences
 window.applyConsoleToggle = applyConsoleToggle;

@@ -2436,20 +2436,11 @@
         </div>
       </div>
 
-      <!-- ─── TABBED CONSOLE PANEL ─── -->
-      <div class="panel fade-in fade-in-d2" id="consolePanel" style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 180px; gap: 0; overflow: hidden;">
-        <!-- Tabs Header -->
-        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-solid); padding: 8px 16px; background: rgba(0,0,0,0.15); flex-shrink: 0;">
-          <div style="display: flex; gap: 16px;">
-            <button id="consoleTabVision" onclick="switchConsoleTab('vision')" style="background: none; border: none; font-family: inherit; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-primary); cursor: pointer; border-bottom: 2px solid var(--accent); padding: 4px 0; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">🎯 Vision Board</button>
-            <button id="consoleTabActivity" onclick="switchConsoleTab('activity')" style="background: none; border: none; font-family: inherit; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; padding: 4px 0; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">📋 Recent Activity</button>
-          </div>
-          <div style="font-size: 9px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;" id="consoleStatusText">Goal Progress Monitor</div>
-        </div>
-
+      <!-- ─── VISION BOARD PANEL ─── -->
+      <div class="panel fade-in fade-in-d2" id="consolePanel" style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 140px; gap: 0; overflow: hidden;">
         <!-- Content Body -->
         <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 16px; min-height: 0; justify-content: center;">
-          <!-- Tab 1: Vision Board -->
+          <!-- Vision Board Content -->
           <div id="consoleContentVision" style="display: flex; gap: 24px; width: 100%; height: 100%; align-items: center; justify-content: flex-start;">
             <!-- Left Side: Goal Image -->
             <div style="position: relative; border-radius: var(--radius-sm); overflow: hidden; width: 180px; height: 110px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-solid); flex-shrink: 0; box-shadow: 0 0 12px rgba(0,0,0,0.4);">
@@ -2465,23 +2456,6 @@
                 Calculating targets...
               </div>
             </div>
-          </div>
-
-          <!-- Tab 2: Recent Activity -->
-          <div id="consoleContentActivity" style="display: none; width: 100%; height: 100%; flex-direction: column; overflow-y: auto; min-height: 0;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 11px;">
-              <thead>
-                <tr style="border-bottom: 1px solid var(--border-solid); height: 24px;">
-                  <th style="padding: 4px 6px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em;">Name</th>
-                  <th style="padding: 4px 6px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em;">Source</th>
-                  <th style="padding: 4px 6px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em;">Current Stage</th>
-                  <th style="padding: 4px 6px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.05em; text-align: right;">Added</th>
-                </tr>
-              </thead>
-              <tbody id="consoleActivityBody">
-                <!-- Rendered dynamically -->
-              </tbody>
-            </table>
           </div>
         </div>
       </div>

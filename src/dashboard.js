@@ -299,50 +299,7 @@ export async function fetchAndRenderDashboard() {
       }
     }
 
-    // ─── Render Recent Activity Console Tab ───
-    const consoleActivityBody = document.getElementById('consoleActivityBody');
-    if (consoleActivityBody) {
-      consoleActivityBody.innerHTML = '';
-      if (leadErr || !leads || leads.length === 0) {
-        consoleActivityBody.innerHTML = `
-          <tr>
-            <td colspan="4" style="text-align: center; padding: 16px; color: var(--text-dim); font-style: italic;">No leads in pipeline yet. Add your first call or DM!</td>
-          </tr>
-        `;
-      } else {
-        // Take only the 5 most recent leads
-        const recentLeads = leads.slice(0, 5);
-        recentLeads.forEach(l => {
-          const dateObj = new Date(l.created_at);
-          const dateFormatted = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
-          
-          const sourceText = l.source === 'cold_call' ? '📞 Call' : '💬 DM';
-          const sourceColor = l.source === 'cold_call' ? 'var(--line-1)' : 'var(--accent)';
-          
-          const stageText = l.pipeline_stage;
-          let stageClass = '';
-          if (stageText === 'Closed Won') {
-            stageClass = 'style="color: #10b981; font-weight: 700;"';
-          } else if (stageText === 'Booked') {
-            stageClass = 'style="color: var(--accent); font-weight: 700;"';
-          } else if (stageText === 'Showed') {
-            stageClass = 'style="color: var(--steelblue); font-weight: 700;"';
-          }
 
-          const nameText = l.name || 'Unnamed Lead';
-
-          const tr = document.createElement('tr');
-          tr.style.borderBottom = '1px solid rgba(255,255,255,0.03)';
-          tr.innerHTML = `
-            <td style="padding: 6px; font-weight: 600; color: var(--text-primary); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nameText}</td>
-            <td style="padding: 6px; color: ${sourceColor}; font-weight: 600;">${sourceText}</td>
-            <td style="padding: 6px;" ${stageClass}>${stageText}</td>
-            <td style="padding: 6px; text-align: right; color: var(--text-dim); font-size: 10px;">${dateFormatted}</td>
-          `;
-          consoleActivityBody.appendChild(tr);
-        });
-      }
-    }
 
     renderHistoryGrid(dailyAmounts, currentChallengeDay);
 
