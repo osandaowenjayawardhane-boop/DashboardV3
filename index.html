@@ -7,7 +7,7 @@
   <meta name="description" content="Live mission control for the $8,000 in 28 days business challenge. Watch work become money in real time.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       /* ─── FROM PROVIDED PALETTE ─── */
@@ -122,22 +122,38 @@
 
     /* ── Glass token overrides (dark mode adaptation) ── */
     :root {
-      --glass-bg:          rgba(18, 18, 38, 0.55);
-      --glass-bg-header:   rgba(12, 12, 30, 0.70);
-      --glass-border:      rgba(255, 255, 255, 0.10);
-      --glass-border-top:  rgba(255, 255, 255, 0.18);
-      --glass-blur:        blur(18px) saturate(160%);
-      --glass-shadow:      0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.06) inset;
+      --glass-bg:          rgba(10, 10, 15, 0.65);
+      --glass-bg-header:   rgba(8, 8, 12, 0.80);
+      --glass-border:      rgba(197, 168, 128, 0.15);
+      --glass-border-top:  rgba(197, 168, 128, 0.25);
+      --glass-blur:        blur(18px) saturate(140%);
+      --glass-shadow:      0 12px 40px rgba(0,0,0,0.6), 0 1px 0 rgba(197, 168, 128, 0.1) inset;
       /* Override semantic text tokens for dark bg */
-      --text:              #e8e8f0;
-      --text-secondary:    rgba(180,180,210,0.85);
-      --text-muted:        rgba(160,160,190,0.75);
-      --text-dim:          rgba(140,140,170,0.5);
-      --surface:           rgba(18,18,38,0.55);
-      --surface-raised:    rgba(28,28,52,0.6);
-      --border-solid:      rgba(255,255,255,0.1);
-      --border:            rgba(255,255,255,0.06);
+      --text:              #f4f4f7;
+      --text-secondary:    rgba(210,210,225,0.9);
+      --text-muted:        rgba(180,180,200,0.7);
+      --text-dim:          rgba(150,150,170,0.55);
+      --surface:           rgba(12, 12, 20, 0.65);
+      --surface-raised:    rgba(22, 22, 34, 0.7);
+      --border-solid:      rgba(197, 168, 128, 0.15);
+      --border:            rgba(197, 168, 128, 0.08);
       --bg:                transparent;
+
+      /* Accents — Champagne Gold & Luxury Bronze */
+      --accent:            #d4af37; /* Burnished Gold */
+      --accent-glow:       rgba(212, 175, 55, 0.25);
+      --accent-subtle:     rgba(212, 175, 55, 0.08);
+      --accent-light:      #f5e6c4;
+
+      --line-1:            #c5a880; /* Champagne Gold (Cold Calls) */
+      --line-1-glow:       rgba(197, 168, 128, 0.22);
+      --line-1-subtle:     rgba(197, 168, 128, 0.08);
+      --line-1-track:      rgba(197, 168, 128, 0.12);
+
+      --line-2:            #8c7865; /* Warm Bronze (Cold DMs) */
+      --line-2-glow:       rgba(140, 120, 101, 0.22);
+      --line-2-subtle:     rgba(140, 120, 101, 0.08);
+      --line-2-track:      rgba(140, 120, 101, 0.12);
     }
 
     /* ─── DASHBOARD GRID ─── */
@@ -184,9 +200,10 @@
     }
 
     .header-brand h1 {
+      font-family: 'Cinzel', serif;
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       color: var(--text);
       white-space: nowrap;
@@ -243,6 +260,24 @@
       width: 0%;
       position: relative;
       transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-fill.at-goal, .goal-bar-fill.at-goal {
+      background: #d4af37 !important;
+      box-shadow: 0 0 12px rgba(212,175,55,0.6) !important;
+    }
+
+    .progress-fill.over-goal, .goal-bar-fill.over-goal {
+      background: linear-gradient(90deg, #d4af37, #f5e6c4, #d4af37) !important;
+      background-size: 200% auto !important;
+      animation: goldShine 2.5s linear infinite !important;
+      box-shadow: 0 0 16px rgba(212,175,55,0.8) !important;
+    }
+
+    @keyframes goldShine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .progress-fill::after {
@@ -913,9 +948,9 @@
       transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .departure-bar-fill.purple { background: linear-gradient(90deg, var(--mediumpurple-100), var(--line-1)); }
-    .departure-bar-fill.coral { background: linear-gradient(90deg, var(--burlywood), var(--line-2)); }
-    .departure-bar-fill.neutral { background: var(--lightgray-100); }
+    .departure-bar-fill.purple { background: linear-gradient(90deg, var(--accent-light), var(--line-1)); }
+    .departure-bar-fill.coral { background: linear-gradient(90deg, #c3b091, var(--line-2)); }
+    .departure-bar-fill.neutral { background: var(--text-dim); }
 
     .departures-total {
       margin-top: auto;
@@ -2178,109 +2213,109 @@
 
             <!-- Track glow layers -->
             <path d="M -10,95 L 760,95 C 820,95 870,115 940,148"
-                  stroke="rgba(105,11,241,0.08)" stroke-width="16" fill="none" stroke-linecap="round"/>
+                  stroke="var(--line-1-glow)" stroke-width="16" fill="none" stroke-linecap="round"/>
             <path d="M -10,215 L 760,215 C 820,215 870,195 940,162"
-                  stroke="rgba(239,107,81,0.08)" stroke-width="16" fill="none" stroke-linecap="round"/>
+                  stroke="var(--line-2-glow)" stroke-width="16" fill="none" stroke-linecap="round"/>
 
             <!-- Track main lines -->
             <path id="blueLine" d="M -10,95 L 760,95 C 820,95 870,115 940,148"
-                  stroke="rgb(105,11,241)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
+                  stroke="var(--line-1)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
             <path id="amberLine" d="M -10,215 L 760,215 C 820,215 870,195 940,162"
-                  stroke="#ef6b51" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
+                  stroke="var(--line-2)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
 
-            <!-- ═══ PURPLE LINE STATIONS (Cold Calls) ═══ -->
-            <circle cx="80" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
-            <circle cx="80" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:0s"/>
-            <text x="80" y="75" class="station-count" id="stageCallsDialed" style="font-size:13px">0</text>
+            <!-- ═══ GOLD LINE STATIONS (Cold Calls) ═══ -->
+            <circle cx="80" cy="95" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-1)" stroke-width="2.5"/>
+            <circle cx="80" cy="95" r="8" stroke="var(--line-1)" class="station-ring" style="animation-delay:0s"/>
+            <text x="80" y="75" class="station-count" id="stageCallsDialed" style="font-size:13px;fill:var(--text)">0</text>
             <text x="80" y="122" class="station-label">Dialed</text>
 
-            <circle cx="250" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
-            <circle cx="250" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:0.6s"/>
-            <text x="250" y="75" class="station-count" id="stageCallsPickedUp" style="font-size:13px">0</text>
+            <circle cx="250" cy="95" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-1)" stroke-width="2.5"/>
+            <circle cx="250" cy="95" r="8" stroke="var(--line-1)" class="station-ring" style="animation-delay:0.6s"/>
+            <text x="250" y="75" class="station-count" id="stageCallsPickedUp" style="font-size:13px;fill:var(--text)">0</text>
             <text x="250" y="122" class="station-label">Picked Up</text>
 
-            <circle cx="420" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
-            <circle cx="420" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:1.2s"/>
-            <text x="420" y="75" class="station-count" id="stageCallsBooked" style="font-size:13px">0</text>
+            <circle cx="420" cy="95" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-1)" stroke-width="2.5"/>
+            <circle cx="420" cy="95" r="8" stroke="var(--line-1)" class="station-ring" style="animation-delay:1.2s"/>
+            <text x="420" y="75" class="station-count" id="stageCallsBooked" style="font-size:13px;fill:var(--text)">0</text>
             <text x="420" y="122" class="station-label">Booked</text>
 
-            <circle cx="590" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
-            <circle cx="590" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:1.8s"/>
-            <text x="590" y="75" class="station-count" id="stageCallsShowed" style="font-size:13px">0</text>
+            <circle cx="590" cy="95" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-1)" stroke-width="2.5"/>
+            <circle cx="590" cy="95" r="8" stroke="var(--line-1)" class="station-ring" style="animation-delay:1.8s"/>
+            <text x="590" y="75" class="station-count" id="stageCallsShowed" style="font-size:13px;fill:var(--text)">0</text>
             <text x="590" y="122" class="station-label">Showed</text>
 
-            <circle cx="760" cy="95" r="8" fill="white" stroke="rgb(105,11,241)" stroke-width="2.5"/>
-            <circle cx="760" cy="95" r="8" stroke="rgb(105,11,241)" class="station-ring" style="animation-delay:2.4s"/>
-            <text x="760" y="75" class="station-count" id="stageCallsClosed" style="font-size:13px">0</text>
+            <circle cx="760" cy="95" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-1)" stroke-width="2.5"/>
+            <circle cx="760" cy="95" r="8" stroke="var(--line-1)" class="station-ring" style="animation-delay:2.4s"/>
+            <text x="760" y="75" class="station-count" id="stageCallsClosed" style="font-size:13px;fill:var(--text)">0</text>
             <text x="760" y="122" class="station-label">Closed Won</text>
 
-            <!-- ═══ CORAL LINE STATIONS (Cold DMs) ═══ -->
-            <circle cx="80" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
-            <circle cx="80" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:0.3s"/>
-            <text x="80" y="195" class="station-count" id="stageDmsSent" style="font-size:13px">0</text>
+            <!-- ═══ BRONZE LINE STATIONS (Cold DMs) ═══ -->
+            <circle cx="80" cy="215" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-2)" stroke-width="2.5"/>
+            <circle cx="80" cy="215" r="8" stroke="var(--line-2)" class="station-ring" style="animation-delay:0.3s"/>
+            <text x="80" y="195" class="station-count" id="stageDmsSent" style="font-size:13px;fill:var(--text)">0</text>
             <text x="80" y="242" class="station-label">Sent</text>
 
-            <circle cx="250" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
-            <circle cx="250" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:0.9s"/>
-            <text x="250" y="195" class="station-count" id="stageDmsReplied" style="font-size:13px">0</text>
+            <circle cx="250" cy="215" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-2)" stroke-width="2.5"/>
+            <circle cx="250" cy="215" r="8" stroke="var(--line-2)" class="station-ring" style="animation-delay:0.9s"/>
+            <text x="250" y="195" class="station-count" id="stageDmsReplied" style="font-size:13px;fill:var(--text)">0</text>
             <text x="250" y="242" class="station-label">Replied</text>
 
-            <circle cx="420" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
-            <circle cx="420" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:1.5s"/>
-            <text x="420" y="195" class="station-count" id="stageDmsBooked" style="font-size:13px">0</text>
+            <circle cx="420" cy="215" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-2)" stroke-width="2.5"/>
+            <circle cx="420" cy="215" r="8" stroke="var(--line-2)" class="station-ring" style="animation-delay:1.5s"/>
+            <text x="420" y="195" class="station-count" id="stageDmsBooked" style="font-size:13px;fill:var(--text)">0</text>
             <text x="420" y="242" class="station-label">Booked</text>
 
-            <circle cx="590" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
-            <circle cx="590" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:2.1s"/>
-            <text x="590" y="195" class="station-count" id="stageDmsShowed" style="font-size:13px">0</text>
+            <circle cx="590" cy="215" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-2)" stroke-width="2.5"/>
+            <circle cx="590" cy="215" r="8" stroke="var(--line-2)" class="station-ring" style="animation-delay:2.1s"/>
+            <text x="590" y="195" class="station-count" id="stageDmsShowed" style="font-size:13px;fill:var(--text)">0</text>
             <text x="590" y="242" class="station-label">Showed</text>
 
-            <circle cx="760" cy="215" r="8" fill="white" stroke="#ef6b51" stroke-width="2.5"/>
-            <circle cx="760" cy="215" r="8" stroke="#ef6b51" class="station-ring" style="animation-delay:2.7s"/>
-            <text x="760" y="195" class="station-count" id="stageDmsClosed" style="font-size:13px">0</text>
+            <circle cx="760" cy="215" r="8" fill="rgba(10, 10, 15, 0.85)" stroke="var(--line-2)" stroke-width="2.5"/>
+            <circle cx="760" cy="215" r="8" stroke="var(--line-2)" class="station-ring" style="animation-delay:2.7s"/>
+            <text x="760" y="195" class="station-count" id="stageDmsClosed" style="font-size:13px;fill:var(--text)">0</text>
             <text x="760" y="242" class="station-label">Closed Won</text>
 
             <!-- ═══ MERGE NODE (Revenue) ═══ -->
-            <circle cx="955" cy="155" r="18" fill="white" stroke="#4535cc" stroke-width="3" filter="url(#glowAccent)"/>
-            <circle cx="955" cy="155" r="24" fill="none" stroke="#4535cc" stroke-width="1" opacity="0.15" filter="url(#glowAccentSoft)">
+            <circle cx="955" cy="155" r="18" fill="rgba(15, 15, 25, 0.95)" stroke="var(--accent)" stroke-width="3" filter="url(#glowAccent)"/>
+            <circle cx="955" cy="155" r="24" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.15" filter="url(#glowAccentSoft)">
               <animate attributeName="r" from="18" to="34" dur="2.5s" repeatCount="indefinite"/>
               <animate attributeName="opacity" from="0.3" to="0" dur="2.5s" repeatCount="indefinite"/>
             </circle>
-            <text x="955" y="152" class="merge-label" style="font-size:10px">$</text>
-            <text x="955" y="164" style="font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;fill:#9ca3af;text-anchor:middle;">REV</text>
+            <text x="955" y="152" class="merge-label" style="font-size:10px;fill:var(--accent)">$</text>
+            <text x="955" y="164" style="font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;fill:var(--text-muted);text-anchor:middle;">REV</text>
 
             <!-- Animated trains (Purple line) -->
-            <circle r="5" fill="rgb(105,11,241)" opacity="0.85" filter="url(#glowPurple)">
+            <circle r="5" fill="var(--line-1)" opacity="0.85" filter="url(#glowPurple)">
               <animateMotion dur="6s" repeatCount="indefinite" begin="0s"><mpath href="#blueLine"/></animateMotion>
             </circle>
-            <circle r="4" fill="rgb(105,11,241)" opacity="0.5">
+            <circle r="4" fill="var(--line-1)" opacity="0.5">
               <animateMotion dur="6s" repeatCount="indefinite" begin="-2s"><mpath href="#blueLine"/></animateMotion>
             </circle>
-            <circle r="3" fill="rgb(105,11,241)" opacity="0.25">
+            <circle r="3" fill="var(--line-1)" opacity="0.25">
               <animateMotion dur="6s" repeatCount="indefinite" begin="-4s"><mpath href="#blueLine"/></animateMotion>
             </circle>
 
             <!-- Animated trains (Coral line) -->
-            <circle r="5" fill="#ef6b51" opacity="0.85" filter="url(#glowCoral)">
+            <circle r="5" fill="var(--line-2)" opacity="0.85" filter="url(#glowCoral)">
               <animateMotion dur="5.5s" repeatCount="indefinite" begin="-1s"><mpath href="#amberLine"/></animateMotion>
             </circle>
-            <circle r="4" fill="#ef6b51" opacity="0.5">
+            <circle r="4" fill="var(--line-2)" opacity="0.5">
               <animateMotion dur="5.5s" repeatCount="indefinite" begin="-3s"><mpath href="#amberLine"/></animateMotion>
             </circle>
-            <circle r="3" fill="#ef6b51" opacity="0.25">
+            <circle r="3" fill="var(--line-2)" opacity="0.25">
               <animateMotion dur="5.5s" repeatCount="indefinite" begin="-5s"><mpath href="#amberLine"/></animateMotion>
             </circle>
 
             <!-- Direction arrows -->
-            <text x="165" y="88" style="font-size:8px;fill:rgb(105,11,241);opacity:0.3;font-family:Inter,sans-serif;">›</text>
-            <text x="335" y="88" style="font-size:8px;fill:rgb(105,11,241);opacity:0.3;font-family:Inter,sans-serif;">›</text>
-            <text x="505" y="88" style="font-size:8px;fill:rgb(105,11,241);opacity:0.3;font-family:Inter,sans-serif;">›</text>
-            <text x="675" y="88" style="font-size:8px;fill:rgb(105,11,241);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="165" y="88" style="font-size:8px;fill:var(--line-1);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="335" y="88" style="font-size:8px;fill:var(--line-1);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="505" y="88" style="font-size:8px;fill:var(--line-1);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="675" y="88" style="font-size:8px;fill:var(--line-1);opacity:0.3;font-family:Inter,sans-serif;">›</text>
 
-            <text x="165" y="208" style="font-size:8px;fill:#ef6b51;opacity:0.3;font-family:Inter,sans-serif;">›</text>
-            <text x="335" y="208" style="font-size:8px;fill:#ef6b51;opacity:0.3;font-family:Inter,sans-serif;">›</text>
-            <text x="505" y="208" style="font-size:8px;fill:#ef6b51;opacity:0.3;font-family:Inter,sans-serif;">›</text>
-            <text x="675" y="208" style="font-size:8px;fill:#ef6b51;opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="165" y="208" style="font-size:8px;fill:var(--line-2);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="335" y="208" style="font-size:8px;fill:var(--line-2);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="505" y="208" style="font-size:8px;fill:var(--line-2);opacity:0.3;font-family:Inter,sans-serif;">›</text>
+            <text x="675" y="208" style="font-size:8px;fill:var(--line-2);opacity:0.3;font-family:Inter,sans-serif;">›</text>
           </svg>
         </div>
       </div>

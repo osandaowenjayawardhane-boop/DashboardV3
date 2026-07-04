@@ -94,18 +94,38 @@ export async function fetchAndRenderDashboard() {
       .select('source, pipeline_stage')
       .eq('challenge_id', chalId);
 
-    let pipelineCounts = {
+    let stageCounts = {
       cold_call: { Dialed: 0, "Picked Up": 0, Booked: 0, Showed: 0, "Closed Won": 0 },
       cold_dm: { Sent: 0, Replied: 0, Booked: 0, Showed: 0, "Closed Won": 0 }
     };
 
     if (!leadErr && leads) {
       leads.forEach(l => {
-        if (pipelineCounts[l.source] && pipelineCounts[l.source][l.pipeline_stage] !== undefined) {
-          pipelineCounts[l.source][l.pipeline_stage]++;
+        if (stageCounts[l.source] && stageCounts[l.source][l.pipeline_stage] !== undefined) {
+          stageCounts[l.source][l.pipeline_stage]++;
         }
       });
     }
+
+    // Calculate cumulative funnel counts
+    let pipelineCounts = {
+      cold_call: { Dialed: 0, "Picked Up": 0, Booked: 0, Showed: 0, "Closed Won": 0 },
+      cold_dm: { Sent: 0, Replied: 0, Booked: 0, Showed: 0, "Closed Won": 0 }
+    };
+
+    // Cold Call funnel order: Dialed -> Picked Up -> Booked -> Showed -> Closed Won
+    pipelineCounts.cold_call["Closed Won"] = stageCounts.cold_call["Closed Won"];
+    pipelineCounts.cold_call.Showed = stageCounts.cold_call.Showed + pipelineCounts.cold_call["Closed Won"];
+    pipelineCounts.cold_call.Booked = stageCounts.cold_call.Booked + pipelineCounts.cold_call.Showed;
+    pipelineCounts.cold_call["Picked Up"] = stageCounts.cold_call["Picked Up"] + pipelineCounts.cold_call.Booked;
+    pipelineCounts.cold_call.Dialed = stageCounts.cold_call.Dialed + pipelineCounts.cold_call["Picked Up"];
+
+    // Cold DM funnel order: Sent -> Replied -> Booked -> Showed -> Closed Won
+    pipelineCounts.cold_dm["Closed Won"] = stageCounts.cold_dm["Closed Won"];
+    pipelineCounts.cold_dm.Showed = stageCounts.cold_dm.Showed + pipelineCounts.cold_dm["Closed Won"];
+    pipelineCounts.cold_dm.Booked = stageCounts.cold_dm.Booked + pipelineCounts.cold_dm.Showed;
+    pipelineCounts.cold_dm.Replied = stageCounts.cold_dm.Replied + pipelineCounts.cold_dm.Booked;
+    pipelineCounts.cold_dm.Sent = stageCounts.cold_dm.Sent + pipelineCounts.cold_dm.Replied;
 
     // Render station texts
     document.getElementById('stageCallsDialed').textContent = pipelineCounts.cold_call.Dialed;
@@ -153,8 +173,30 @@ export async function fetchAndRenderDashboard() {
     animateValue(document.getElementById('progressCurrent'), 0, totalRevenue, 800, '$');
     const goal = currentChallenge.goal_amount || 8000;
     const progressPct = ((totalRevenue / goal) * 100).toFixed(1);
-    document.getElementById('progressFill').style.width = Math.min(progressPct, 100) + '%';
-    document.getElementById('goalFill').style.width = Math.min(progressPct, 100) + '%';
+
+    const progressFill = document.getElementById('progressFill');
+    const goalFill = document.getElementById('goalFill');
+
+    if (progressFill) {
+      progressFill.style.width = Math.min(progressPct, 100) + '%';
+      progressFill.classList.remove('at-goal', 'over-goal');
+      if (parseFloat(progressPct) > 100) {
+        progressFill.classList.add('over-goal');
+      } else if (parseFloat(progressPct) === 100) {
+        progressFill.classList.add('at-goal');
+      }
+    }
+
+    if (goalFill) {
+      goalFill.style.width = Math.min(progressPct, 100) + '%';
+      goalFill.classList.remove('at-goal', 'over-goal');
+      if (parseFloat(progressPct) > 100) {
+        goalFill.classList.add('over-goal');
+      } else if (parseFloat(progressPct) === 100) {
+        goalFill.classList.add('at-goal');
+      }
+    }
+
     document.getElementById('goalPct').textContent = progressPct + '%';
     document.getElementById('headerPct').textContent = progressPct + '%';
 
