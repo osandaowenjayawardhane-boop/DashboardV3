@@ -289,13 +289,13 @@ export async function fetchAndRenderDashboard() {
 
     if (grindDealsText) {
       if (remainingRev <= 0) {
-        grindDealsText.innerHTML = `🎉 <span style="color: #10b981; font-weight: 700;">Goal Unlocked!</span> Enjoy your <strong style="color: var(--accent); font-family: 'Cinzel', serif; font-weight: 700;">${rewardName}</strong>! You've successfully conquered the challenge.`;
+        grindDealsText.innerHTML = `🎉 <span style="color: #10b981; font-weight: 700;">Goal Unlocked!</span> Enjoy your <strong style="color: var(--accent); font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;">${rewardName}</strong>! You've successfully conquered the challenge.`;
       } else {
         const dealsNeeded = Math.ceil(remainingRev / dealPriceSetting);
         const bookedNeeded = Math.ceil(dealsNeeded / closeRate);
         const dealPriceFormatted = dealPriceSetting.toLocaleString();
         
-        grindDealsText.innerHTML = `You are <strong style="color: var(--accent); font-weight: 700;">${dealsNeeded} Closed Won deals</strong> (at $${dealPriceFormatted} each) away from unlocking your <strong style="color: var(--accent); font-family: 'Cinzel', serif; font-weight: 700;">${rewardName}</strong>. Based on your <strong style="color: var(--accent); font-weight: 700;">${closeRatePct}% closing rate</strong>, you need to book <strong style="color: var(--accent); font-weight: 700;">${bookedNeeded} meetings</strong> to secure them.`;
+        grindDealsText.innerHTML = `You are <strong style="color: var(--accent); font-weight: 700;">${dealsNeeded} Closed Won deals</strong> (at $${dealPriceFormatted} each) away from unlocking your <strong style="color: var(--accent); font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;">${rewardName}</strong>. Based on your <strong style="color: var(--accent); font-weight: 700;">${closeRatePct}% closing rate</strong>, you need to book <strong style="color: var(--accent); font-weight: 700;">${bookedNeeded} meetings</strong> to secure them.`;
       }
     }
 
