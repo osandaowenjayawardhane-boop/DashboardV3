@@ -1,21 +1,17 @@
 // supabase/functions/ghl-webhook/index.ts
 //
-// GoHighLevel → Supabase pipeline sync.
+// GoHighLevel Workflow Webhook → Supabase pipeline sync.
 //
-// GHL sends one webhook per opportunity event. This function maps
-// the incoming payload to a lead record and upserts it by external_id
-// (the GHL opportunity ID), so stage moves update the same row.
-//
-// CORS: GHL sends requests from their servers, not a browser, so no
-// CORS headers are needed. We just need to return 200 fast.
+// GHL Workflow webhooks do NOT send an event/type field.
+// Instead, we detect what happened by examining the payload structure.
+// If an opportunity or contact object is present, we upsert the lead.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { ActivityService, getSupabaseClient } from "../activity-service/index.ts";
 
-// ─── GHL STAGE NAME → Dashboard Stage ──────────────────────────────────────
-// Edit this map to match your exact GHL pipeline stage names.
-// Keys are lowercase substrings of your GHL stage name.
-// First match wins (order matters).
+// ─── STAGE NAME → Dashboard Stage ──────────────────────────────────────────
+// Edit these to match your exact GHL pipeline stage names (case-insensitive substring match).
+// First match wins — put more specific strings before general ones.
 const STAGE_MAP: Array<{ match: string; stage: string }> = [
   { match: "closed won",  stage: "Closed Won" },
   { match: "won",         stage: "Closed Won" },
@@ -37,86 +33,114 @@ const STAGE_MAP: Array<{ match: string; stage: string }> = [
 ];
 
 function mapGhlStage(stageName: string, status: string, source: "cold_call" | "cold_dm"): string {
-  // GHL marks closed as won/lost in the "status" field
-  const s = status.toLowerCase();
+  // GHL marks closed opportunities via the status field
+  const s = (status ?? "").toLowerCase();
   if (s === "won") return "Closed Won";
-  if (s === "lost" || s === "abandoned") return source === "cold_call" ? "Dialed" : "Sent"; // back to start on lost
 
-  const lower = stageName.toLowerCase();
+  const lower = (stageName ?? "").toLowerCase();
   for (const { match, stage } of STAGE_MAP) {
     if (lower.includes(match)) return stage;
   }
 
-  // Default: if we can't map it, keep at first stage
+  // Default: first stage for the source channel
   return source === "cold_call" ? "Dialed" : "Sent";
 }
 
-// ─── Extract contact info from GHL payload ──────────────────────────────────
-// GHL's opportunity webhook nests contact data differently depending on
-// whether it came from the opportunity or the contact object.
-function extractContact(payload: Record<string, unknown>) {
-  // GHL v2 opportunity webhook structure
-  const contact = (payload.contact ?? {}) as Record<string, unknown>;
-  const opportunity = (payload.opportunity ?? payload) as Record<string, unknown>;
+// ─── Extract fields from GHL Workflow webhook payload ───────────────────────
+// GHL Workflow webhooks flatten most fields to the top level.
+// Event-based API webhooks nest them under contact/opportunity objects.
+// We handle both layouts here.
+type Rec = Record<string, unknown>;
 
-  const name =
-    (contact.name as string) ||
-    (opportunity.name as string) ||
-    [contact.firstName, contact.lastName].filter(Boolean).join(" ") ||
-    [payload.firstName, payload.lastName].filter(Boolean).join(" ") ||
-    null;
+function str(v: unknown): string {
+  return typeof v === "string" ? v.trim() : "";
+}
 
-  const phone =
-    (contact.phone as string) ||
-    (contact.phoneRaw as string) ||
-    (payload.phone as string) ||
-    null;
+function extractPayloadData(p: Rec) {
+  // GHL can send data nested under "opportunity", "contact", or flat at root
+  const opp     = (p.opportunity   ?? {}) as Rec;
+  const contact  = (p.contact       ?? {}) as Rec;
 
-  const email =
-    (contact.email as string) ||
-    (payload.email as string) ||
-    null;
+  // ── Opportunity / stage info ────────────────────────────────────────────
+  // Workflow webhooks put stageName at top-level; API webhooks nest it
+  const stageName =
+    str(p.stageName)         ||
+    str(p.stage_name)        ||
+    str(opp.stageName)       ||
+    str(opp.stage_name)      ||
+    str(opp.name)            || // some GHL versions use opportunity.name for stage
+    "";
 
-  const company =
-    (contact.companyName as string) ||
-    (contact.company as string) ||
-    (payload.companyName as string) ||
-    null;
+  const status =
+    str(p.status)            ||
+    str(opp.status)          ||
+    str(p.opportunityStatus) ||
+    "";
 
-  // The GHL opportunity ID — this is our stable external_id
+  // ── External ID — use GHL opportunity ID as the stable key ──────────────
   const externalId =
-    (opportunity.id as string) ||
-    (payload.id as string) ||
-    (payload.opportunityId as string) ||
-    (payload.opportunity_id as string) ||
-    (contact.id as string) ||
-    (payload.contact_id as string) ||
+    str(p.id)                ||
+    str(opp.id)              ||
+    str(p.opportunityId)     ||
+    str(p.opportunity_id)    ||
+    str(contact.id)          ||
+    str(p.contactId)         ||
+    str(p.contact_id)        ||
     null;
 
-  // Source: check tags or custom fields; default to cold_call
-  const tags = (contact.tags as string[]) || (payload.tags as string[]) || [];
+  // ── Contact info ─────────────────────────────────────────────────────────
+  const firstName  = str(p.firstName)  || str(contact.firstName)  || "";
+  const lastName   = str(p.lastName)   || str(contact.lastName)   || "";
+  const fullName   = str(p.name)       || str(contact.name)       || str(opp.contactName) ||
+                     [firstName, lastName].filter(Boolean).join(" ") || null;
+
+  const phone    = str(p.phone)        || str(contact.phone)      || str(p.phoneRaw)  || null;
+  const email    = str(p.email)        || str(contact.email)      || null;
+  const company  = str(p.companyName)  || str(contact.companyName)|| str(p.company)   || null;
+
+  // ── Source: default to cold_call unless tagged otherwise ─────────────────
+  const tags: string[] = (p.tags as string[]) ?? (contact.tags as string[]) ?? [];
   const source: "cold_call" | "cold_dm" =
     tags.some(t => ["cold_dm", "dm", "DM"].includes(t)) ? "cold_dm" : "cold_call";
 
-  return { name, phone, email, company, externalId, source };
+  return { stageName, status, externalId, name: fullName, phone, email, company, source };
 }
 
-// ─── Main handler ───────────────────────────────────────────────────────────
+// ─── Detect whether this payload contains an opportunity / contact ───────────
+function hasOpportunityData(p: Rec): boolean {
+  return !!(
+    p.id ||
+    p.opportunityId ||
+    p.opportunity_id ||
+    p.stageName ||
+    p.stage_name ||
+    p.opportunity ||
+    p.contactId ||
+    p.contact_id ||
+    p.contact
+  );
+}
+
+// ─── Main handler ────────────────────────────────────────────────────────────
 serve(async (req) => {
-  // GHL may send HEAD/OPTIONS first
   if (req.method !== "POST") {
     return new Response("OK", { status: 200 });
   }
 
   const url = new URL(req.url);
-  let userId = url.searchParams.get("userId");
+  let userId      = url.searchParams.get("userId");
   let challengeId = url.searchParams.get("challengeId");
 
+  let rawBody = "";
   try {
-    const payload = await req.json() as Record<string, unknown>;
-    const eventType = ((payload.type ?? payload.event ?? "") as string).toLowerCase();
+    rawBody = await req.text();
+    console.log("GHL Webhook | raw body:", rawBody.slice(0, 1000));
 
-    console.log(`GHL Webhook | event="${eventType}"`, JSON.stringify(payload).slice(0, 400));
+    const payload = JSON.parse(rawBody) as Rec;
+
+    // ── Event type (may be empty for Workflow webhooks) ───────────────────
+    const eventType = str(payload.type || payload.event).toLowerCase();
+    console.log(`GHL Webhook | eventType="${eventType}"`);
 
     // ── Resolve user + challenge ──────────────────────────────────────────
     if (!userId) {
@@ -127,14 +151,15 @@ serve(async (req) => {
         .limit(1);
 
       if (chalData && chalData.length > 0) {
-        userId = chalData[0].user_id;
+        userId      = chalData[0].user_id;
         challengeId = chalData[0].id;
       }
     }
 
     if (!userId) {
+      console.error("GHL Webhook: no userId found in URL params or challenge table.");
       return new Response(
-        JSON.stringify({ error: "No user context found. Pass ?userId=... in the webhook URL." }),
+        JSON.stringify({ error: "No user context. Pass ?userId=<uuid> in the webhook URL." }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
@@ -145,68 +170,52 @@ serve(async (req) => {
       challengeId = chal.id;
     }
 
-    // ── Route by event type ───────────────────────────────────────────────
-    const { name, phone, email, company, externalId, source } = extractContact(payload);
+    // ── Decide whether to process ─────────────────────────────────────────
+    // Process if: known event type OR payload contains opportunity/contact data
+    const isKnownEvent = [
+      "opportunitycreated", "opportunity_created",
+      "opportunitystatusupdated", "opportunity_status_updated",
+      "opportunitystatuschanged", "opportunity_status_changed",
+      "opportunitystagechanged", "opportunity_stage_changed",
+    ].includes(eventType);
 
-    if (
-      eventType === "opportunitycreated" ||
-      eventType === "opportunity_created"
-    ) {
-      // New opportunity → create lead at first stage
-      const stageName = (
-        (payload.stageName ?? payload.stage_name ?? (payload.opportunity as Record<string,unknown>)?.stageName ?? "") as string
-      );
-      const status = ((payload.status ?? "") as string);
-      const pipelineStage = mapGhlStage(stageName, status, source);
+    const isWorkflowPayload = !eventType && hasOpportunityData(payload);
+    const hasData = hasOpportunityData(payload);
 
-      await service.upsertLead(userId, challengeId, {
-        name, phone, email, company, source, pipeline_stage: pipelineStage, external_id: externalId ?? undefined,
+    if (!isKnownEvent && !isWorkflowPayload && !hasData) {
+      console.log(`GHL Webhook: no recognisable data in payload — skipping.`);
+      return new Response(JSON.stringify({ success: true, skipped: true, reason: "no opportunity data found" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
       });
     }
-    else if (
-      eventType === "opportunitystatusupdated"  ||
-      eventType === "opportunity_status_updated" ||
-      eventType === "opportunitystatuschanged"   ||
-      eventType === "opportunity_status_changed"
-    ) {
-      // Stage moved OR won/lost
-      const stageName = (
-        (payload.stageName ?? payload.stage_name ?? (payload.opportunity as Record<string,unknown>)?.stageName ?? "") as string
-      );
-      const status = ((payload.status ?? (payload.opportunity as Record<string,unknown>)?.status ?? "") as string);
-      const pipelineStage = mapGhlStage(stageName, status, source);
 
-      await service.upsertLead(userId, challengeId, {
-        name, phone, email, company, source, pipeline_stage: pipelineStage, external_id: externalId ?? undefined,
-      });
-    }
-    else if (
-      eventType === "opportunitystagechanged" ||
-      eventType === "opportunity_stage_changed"
-    ) {
-      const stageName = (
-        (payload.stageName ?? payload.stage_name ?? "") as string
-      );
-      const status = ((payload.status ?? "") as string);
-      const pipelineStage = mapGhlStage(stageName, status, source);
+    // ── Extract and upsert ────────────────────────────────────────────────
+    const { stageName, status, externalId, name, phone, email, company, source } =
+      extractPayloadData(payload);
 
-      await service.upsertLead(userId, challengeId, {
-        name, phone, email, company, source, pipeline_stage: pipelineStage, external_id: externalId ?? undefined,
-      });
-    }
-    else {
-      // Unrecognised event — log it and return 200 so GHL doesn't retry
-      console.log(`GHL Webhook: unhandled event type "${eventType}" — ignoring.`);
-    }
+    const pipelineStage = mapGhlStage(stageName, status, source);
 
-    return new Response(JSON.stringify({ success: true, event: eventType }), {
+    console.log(`GHL Webhook | upserting lead: externalId="${externalId}" stage="${pipelineStage}" name="${name}" source="${source}"`);
+
+    await service.upsertLead(userId, challengeId, {
+      name:           name ?? undefined,
+      phone:          phone ?? undefined,
+      email:          email ?? undefined,
+      company:        company ?? undefined,
+      source,
+      pipeline_stage: pipelineStage,
+      external_id:    externalId ?? undefined,
+    });
+
+    return new Response(JSON.stringify({ success: true, event: eventType || "workflow", stage: pipelineStage }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
 
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error(`GHL Webhook error: ${msg}`);
+    console.error(`GHL Webhook error: ${msg}`, rawBody.slice(0, 500));
     return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
