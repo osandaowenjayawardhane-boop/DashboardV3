@@ -74,39 +74,40 @@ function toggleSetupPanel() {
 }
 
 export function switchViewTab(tabName) {
-  const scoreboardBtn = document.getElementById('btnScoreboardTab');
-  const leadsBtn = document.getElementById('btnLeadsTab');
+  const scoreboardBtn  = document.getElementById('btnScoreboardTab');
+  const leadsBtn       = document.getElementById('btnLeadsTab');
+  const timelineBtn    = document.getElementById('btnTimelineTab');
   const scoreboardMain = document.getElementById('mainScoreboard');
   const scoreboardFooter = document.getElementById('footerScoreboard');
-  const leadsPanel = document.getElementById('leadsPanel');
-  
-  if (tabName === 'scoreboard') {
-    if (scoreboardBtn) {
-      scoreboardBtn.style.color = 'var(--text-primary)';
-      scoreboardBtn.style.borderBottomColor = 'var(--accent)';
-    }
-    if (leadsBtn) {
-      leadsBtn.style.color = 'var(--text-muted)';
-      leadsBtn.style.borderBottomColor = 'transparent';
-    }
-    if (scoreboardMain) scoreboardMain.style.display = 'grid';
-    if (scoreboardFooter) scoreboardFooter.style.display = 'block';
-    if (leadsPanel) leadsPanel.style.display = 'none';
-  } else {
-    if (scoreboardBtn) {
-      scoreboardBtn.style.color = 'var(--text-muted)';
-      scoreboardBtn.style.borderBottomColor = 'transparent';
-    }
-    if (leadsBtn) {
-      leadsBtn.style.color = 'var(--text-primary)';
-      leadsBtn.style.borderBottomColor = 'var(--accent)';
-    }
-    if (scoreboardMain) scoreboardMain.style.display = 'none';
-    if (scoreboardFooter) scoreboardFooter.style.display = 'none';
-    if (leadsPanel) leadsPanel.style.display = 'block';
-    
-    // Import dynamically to avoid eager circular dependencies
+  const leadsPanel     = document.getElementById('leadsPanel');
+  const timelinePanel  = document.getElementById('timelinePanel');
+
+  const TAB_STYLE_ACTIVE   = { color: 'var(--text-primary)', borderBottomColor: 'var(--accent)' };
+  const TAB_STYLE_INACTIVE = { color: 'var(--text-muted)',   borderBottomColor: 'transparent' };
+
+  const applyTabStyle = (btn, active) => {
+    if (!btn) return;
+    btn.style.color = active ? TAB_STYLE_ACTIVE.color : TAB_STYLE_INACTIVE.color;
+    btn.style.borderBottomColor = active ? TAB_STYLE_ACTIVE.borderBottomColor : TAB_STYLE_INACTIVE.borderBottomColor;
+  };
+
+  // Reset all tabs first
+  applyTabStyle(scoreboardBtn,  tabName === 'scoreboard');
+  applyTabStyle(leadsBtn,       tabName === 'leads');
+  applyTabStyle(timelineBtn,    tabName === 'timeline');
+
+  // Show/hide panels
+  if (scoreboardMain)   scoreboardMain.style.display   = tabName === 'scoreboard' ? 'grid'  : 'none';
+  if (scoreboardFooter) scoreboardFooter.style.display  = tabName === 'scoreboard' ? 'block' : 'none';
+  if (leadsPanel)       leadsPanel.style.display        = tabName === 'leads'      ? 'block' : 'none';
+  if (timelinePanel)    timelinePanel.style.display     = tabName === 'timeline'   ? 'block' : 'none';
+
+  // Lazy-load content
+  if (tabName === 'leads') {
     import('./leads.js').then(m => m.fetchAndRenderLeads());
+  }
+  if (tabName === 'timeline') {
+    import('./timeline.js').then(m => m.renderTimeline());
   }
 }
 

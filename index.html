@@ -354,6 +354,220 @@
       border-color: var(--border-hover);
     }
 
+    /* ─── TIMELINE / CHALLENGE CALENDAR ─── */
+    #timelinePanel {
+      display: none;
+      padding: 0 0 40px 0;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .tl-wrap { padding: 24px 28px; }
+
+    .tl-hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+    .tl-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .tl-dates {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Badges */
+    .tl-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+    }
+    .tl-badge-active  { background: var(--accent-subtle); color: var(--accent); border: 1px solid rgba(69,53,204,0.2); }
+    .tl-badge-pending { background: rgba(245,158,11,0.08); color: #b45309; border: 1px solid rgba(245,158,11,0.25); }
+    .tl-badge-done    { background: rgba(16,185,129,0.08); color: #065f46; border: 1px solid rgba(16,185,129,0.25); }
+
+    /* Stat row */
+    .tl-stats {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      margin-bottom: 20px;
+    }
+    .tl-stat { flex: 1; text-align: center; }
+    .tl-stat-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .tl-stat-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+    .tl-stat-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border-solid);
+      flex-shrink: 0;
+    }
+
+    /* Progress bar */
+    .tl-progress-wrap {
+      margin-bottom: 24px;
+    }
+    .tl-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .tl-progress-pct { color: var(--accent); }
+    .tl-progress-track {
+      height: 6px;
+      background: var(--whitesmoke-400);
+      border-radius: 99px;
+      overflow: visible;
+      position: relative;
+    }
+    .tl-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--mediumpurple-100));
+      border-radius: 99px;
+      position: relative;
+      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .tl-progress-thumb {
+      position: absolute;
+      right: -4px; top: 50%;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid white;
+      transform: translateY(-50%);
+      box-shadow: 0 0 0 3px rgba(69,53,204,0.15);
+    }
+
+    /* Calendar grid */
+    .tl-calendar {
+      background: var(--surface);
+      border: 1px solid var(--border-solid);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .tl-cal-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border-bottom: 1px solid var(--border-solid);
+    }
+    .tl-cal-day-name {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 10px 0;
+    }
+    .tl-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+    }
+    .tl-cal-cell {
+      min-height: 72px;
+      border-right: 1px solid var(--border-solid);
+      border-bottom: 1px solid var(--border-solid);
+      padding: 8px 10px;
+      position: relative;
+      transition: background 0.15s;
+    }
+    .tl-cal-cell:nth-child(7n) { border-right: none; }
+    .tl-cal-date {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .tl-cal-challenge-day {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      opacity: 0.8;
+    }
+
+    /* Cell states */
+    .tl-outside .tl-cal-date { color: var(--text-dim); }
+    .tl-outside .tl-cal-challenge-day { display: none; }
+    .tl-outside { background: var(--whitesmoke-300); }
+
+    .tl-in-challenge { background: rgba(69,53,204,0.025); }
+
+    .tl-past .tl-cal-date { color: var(--text-secondary); }
+    .tl-past .tl-cal-challenge-day { opacity: 0.55; }
+
+    .tl-future .tl-cal-challenge-day { opacity: 0.45; }
+
+    /* Today — highlighted */
+    .tl-today {
+      background: var(--accent-subtle) !important;
+      border: 2px solid rgba(69,53,204,0.3) !important;
+    }
+    .tl-today .tl-cal-date {
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 15px;
+    }
+    .tl-today .tl-cal-challenge-day {
+      color: var(--accent);
+      opacity: 1;
+      font-size: 10px;
+    }
+    .tl-today-pip {
+      position: absolute;
+      bottom: 7px; right: 8px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: timer-pulse 2s ease-in-out infinite;
+    }
+
+    .tl-month-label {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .tl-empty {
+      padding: 60px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
     /* ─── CELEBRATION SYSTEM ─── */
 
     /* Blurred backdrop — sits over dashboard, below toast */
@@ -1741,6 +1955,7 @@
         <nav style="display: flex; gap: 16px; align-items: center;">
           <button id="btnScoreboardTab" onclick="switchViewTab('scoreboard')" style="background: none; border: none; font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-primary); cursor: pointer; border-bottom: 2px solid var(--accent); padding: 6px 0; transition: all 0.2s;">Scoreboard</button>
           <button id="btnLeadsTab" onclick="switchViewTab('leads')" style="background: none; border: none; font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; padding: 6px 0; transition: all 0.2s;">Leads</button>
+          <button id="btnTimelineTab" onclick="switchViewTab('timeline')" style="background: none; border: none; font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; padding: 6px 0; transition: all 0.2s;">Calendar</button>
         </nav>
       </div>
       <div class="progress-container">
@@ -2034,6 +2249,8 @@
     </footer>
 
   <!-- ═══ LEADS PANEL ═══ -->
+  <div id="timelinePanel"></div>
+
   <div class="panel fade-in" id="leadsPanel" style="display: none; padding: 20px; max-width: 1400px; margin: 16px auto; min-height: 480px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-solid); border-radius: var(--radius); background: var(--surface);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-solid); padding-bottom: 12px;">
       <h2 style="font-size: 14px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">Leads Directory</h2>
