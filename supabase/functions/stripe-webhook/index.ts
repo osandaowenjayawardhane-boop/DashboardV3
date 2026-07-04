@@ -25,6 +25,7 @@ serve(async (req) => {
     let amount = 0;
     let userId = "";
     let challengeId = "";
+    let stripeId = "";
 
     // Determine event metadata
     if (
@@ -34,6 +35,13 @@ serve(async (req) => {
     ) {
       const obj = event.data.object as any;
       amount = (obj.amount_received || obj.amount_total || obj.amount_paid || 0) / 100; // convert cents to dollars
+      
+      // Determine the most specific unique identifier for this transaction
+      if (event.type === "payment_intent.succeeded") {
+        stripeId = obj.id;
+      } else {
+        stripeId = obj.payment_intent || obj.id;
+      }
       
       // Look for userId/challengeId in metadata
       userId = obj.metadata?.user_id || obj.metadata?.userId || "";
@@ -67,7 +75,7 @@ serve(async (req) => {
       const todayStr = new Date().toISOString().split('T')[0];
       
       // Insert revenue row (which triggers the daily_revenue sync via DB trigger)
-      await service.addRevenueRecord(userId, challengeId, amount, todayStr);
+      await service.addRevenueRecord(userId, challengeId, amount, todayStr, stripeId || undefined);
       console.log(`Successfully recorded sale of $${amount} for user ${userId}`);
     }
 

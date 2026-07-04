@@ -175,12 +175,25 @@ export class ActivityService {
     userId: string,
     challengeId: string,
     amount: number,
-    dateStr: string
+    dateStr: string,
+    stripeId?: string
   ) {
     const { error } = await this.supabase
       .from("revenue")
-      .insert({ user_id: userId, challenge_id: challengeId, amount, revenue_date: dateStr });
+      .insert({ 
+        user_id: userId, 
+        challenge_id: challengeId, 
+        amount, 
+        revenue_date: dateStr,
+        stripe_id: stripeId 
+      });
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === "23505") {
+        console.log(`Stripe transaction "${stripeId}" already processed — ignoring duplicate.`);
+        return;
+      }
+      throw error;
+    }
   }
 }

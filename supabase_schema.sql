@@ -262,3 +262,6 @@ DROP TRIGGER IF EXISTS trg_lead_updated_at ON public.lead;
 CREATE TRIGGER trg_lead_updated_at
   BEFORE UPDATE ON public.lead
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+-- Add stripe_id to revenue table to prevent duplicate transaction counts from Stripe
+ALTER TABLE public.revenue ADD COLUMN IF NOT EXISTS stripe_id TEXT UNIQUE;
