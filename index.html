@@ -115,45 +115,47 @@
     body {
       /* ── Full-viewport background image ── */
       background:
-        linear-gradient(rgba(5, 5, 18, 0.6), rgba(5, 5, 18, 0.6)),
-        url('/bg.jpg') center center / cover no-repeat fixed;
-      color: #e8e8f0;
+        linear-gradient(rgba(10, 15, 30, 0.75), rgba(0, 0, 10, 0.95)),
+        url('/evanescence_bg.jpg') center center / cover no-repeat fixed;
+      color: #e2e8f0;
     }
 
-    /* ── Glass token overrides (dark mode adaptation) ── */
+    /* ── Glass token overrides (Evanescence Gothic Theme) ── */
     :root {
-      --glass-bg:          rgba(10, 10, 15, 0.65);
-      --glass-bg-header:   rgba(8, 8, 12, 0.80);
-      --glass-border:      rgba(197, 168, 128, 0.15);
-      --glass-border-top:  rgba(197, 168, 128, 0.25);
-      --glass-blur:        blur(18px) saturate(140%);
-      --glass-shadow:      0 12px 40px rgba(0,0,0,0.6), 0 1px 0 rgba(197, 168, 128, 0.1) inset;
+      --glass-bg:          rgba(5, 10, 20, 0.75);
+      --glass-bg-header:   rgba(2, 5, 12, 0.85);
+      --glass-border:      rgba(162, 210, 255, 0.25);
+      --glass-border-top:  rgba(255, 255, 255, 0.35);
+      --glass-blur:        blur(24px) saturate(160%);
+      --glass-shadow:      0 12px 40px rgba(0,0,0,0.8), 0 1px 0 rgba(162, 210, 255, 0.15) inset;
+      
       /* Override semantic text tokens for dark bg */
-      --text:              #f4f4f7;
-      --text-secondary:    rgba(210,210,225,0.9);
-      --text-muted:        rgba(180,180,200,0.7);
-      --text-dim:          rgba(150,150,170,0.55);
-      --surface:           rgba(12, 12, 20, 0.65);
-      --surface-raised:    rgba(22, 22, 34, 0.7);
-      --border-solid:      rgba(197, 168, 128, 0.15);
-      --border:            rgba(197, 168, 128, 0.08);
+      --text:              #ffffff;
+      --text-secondary:    #e2e8f0;
+      --text-muted:        #94a3b8;
+      --text-dim:          #64748b;
+      
+      --surface:           rgba(10, 15, 25, 0.75);
+      --surface-raised:    rgba(20, 25, 40, 0.85);
+      --border-solid:      rgba(162, 210, 255, 0.20);
+      --border:            rgba(162, 210, 255, 0.12);
       --bg:                transparent;
 
-      /* Accents — Champagne Gold & Luxury Bronze */
-      --accent:            #d4af37; /* Burnished Gold */
-      --accent-glow:       rgba(212, 175, 55, 0.25);
-      --accent-subtle:     rgba(212, 175, 55, 0.08);
-      --accent-light:      #f5e6c4;
+      /* Accents — Electric Lightning Blue & Ethereal Silver */
+      --accent:            #00f0ff; /* Lightning Cyan */
+      --accent-glow:       rgba(0, 240, 255, 0.4);
+      --accent-subtle:     rgba(0, 240, 255, 0.1);
+      --accent-light:      #a2d2ff;
 
-      --line-1:            #c5a880; /* Champagne Gold (Cold Calls) */
-      --line-1-glow:       rgba(197, 168, 128, 0.22);
-      --line-1-subtle:     rgba(197, 168, 128, 0.08);
-      --line-1-track:      rgba(197, 168, 128, 0.12);
+      --line-1:            #a2d2ff; /* Ice Blue */
+      --line-1-glow:       rgba(162, 210, 255, 0.3);
+      --line-1-subtle:     rgba(162, 210, 255, 0.1);
+      --line-1-track:      rgba(162, 210, 255, 0.15);
 
-      --line-2:            #8c7865; /* Warm Bronze (Cold DMs) */
-      --line-2-glow:       rgba(140, 120, 101, 0.22);
-      --line-2-subtle:     rgba(140, 120, 101, 0.08);
-      --line-2-track:      rgba(140, 120, 101, 0.12);
+      --line-2:            #e2e8f0; /* Ethereal Silver */
+      --line-2-glow:       rgba(226, 232, 240, 0.3);
+      --line-2-subtle:     rgba(226, 232, 240, 0.1);
+      --line-2-track:      rgba(226, 232, 240, 0.15);
     }
 
     /* ─── DASHBOARD GRID ─── */
@@ -1193,7 +1195,7 @@
     }
 
     .revenue-value {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Cinzel', serif;
       font-weight: 700;
       line-height: 1;
     }
@@ -1202,6 +1204,27 @@
       font-size: 36px;
       color: var(--accent);
       letter-spacing: -0.03em;
+      text-shadow: 0 0 10px var(--accent-glow);
+      animation: lightningStrike 5s infinite;
+    }
+
+    @keyframes lightningStrike {
+      0%, 95%, 98%, 100% {
+        text-shadow: 0 0 10px var(--accent-glow);
+        color: var(--accent);
+      }
+      96% {
+        text-shadow: 0 0 40px #ffffff, 0 0 80px #ffffff;
+        color: #ffffff;
+      }
+      97% {
+        text-shadow: 0 0 5px var(--accent-glow);
+        color: var(--accent);
+      }
+      99% {
+        text-shadow: 0 0 20px #ffffff, 0 0 60px var(--accent);
+        color: #e2e8f0;
+      }
     }
 
     .revenue-value.today {
